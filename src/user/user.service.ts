@@ -184,6 +184,6 @@ export class UserService {
         todayCnt: LessThanOrEqual(user.view.todayCnt),
       },
     });
-    return rank + 1;
+    return rank;
   }
 }
