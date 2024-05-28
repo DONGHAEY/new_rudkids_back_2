@@ -62,6 +62,7 @@ export class InvitationService {
     if (!invitation) return null;
 
     let friends = [];
+    let otherUsers: UserEntity[] = [];
     let invitedUsers: UserEntity[] = [];
     if (invitation.school) {
       invitedUsers = await this.userRepository.find({
@@ -72,6 +73,14 @@ export class InvitationService {
         },
         take: 최대표시유저,
       });
+      otherUsers = await this.userRepository.find({
+        where: {
+          school: {
+            name: Not(invitation?.school?.name),
+          },
+        },
+        take: 최대표시유저 - invitedUsers.length,
+      });
     } else if (invitation.inviter) {
       invitedUsers = await this.userRepository.find({
         where: {
@@ -81,15 +90,15 @@ export class InvitationService {
         },
         take: 3,
       });
-    }
-    const otherUsers: UserEntity[] = await this.userRepository.find({
-      where: {
-        inviter: {
-          id: Not(invitation.inviter.id),
+      otherUsers = await this.userRepository.find({
+        where: {
+          inviter: {
+            id: Not(invitation?.inviter?.id),
+          },
         },
-      },
-      take: 최대표시유저 - invitedUsers.length,
-    });
+        take: 최대표시유저 - invitedUsers.length,
+      });
+    }
 
     friends = [...invitedUsers, ...otherUsers];
 
