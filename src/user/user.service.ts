@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
-import { LessThan, Repository } from 'typeorm';
+import { LessThan, LessThanOrEqual, Repository } from 'typeorm';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { SmsService } from 'src/sms/sms.service';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -180,8 +180,8 @@ export class UserService {
   private async getUserRank(user: UserEntity): Promise<number> {
     const rank = await this.userRepository.countBy({
       view: {
-        totalCnt: LessThan(user.view.totalCnt),
-        todayCnt: LessThan(user.view.todayCnt),
+        totalCnt: LessThanOrEqual(user.view.totalCnt),
+        todayCnt: LessThanOrEqual(user.view.todayCnt),
       },
     });
     return rank + 1;
