@@ -40,6 +40,7 @@ export class UserEntity extends BaseEntity {
 
   @Column({
     type: 'longtext',
+    default: '',
   })
   links: string; //소셜링크들
 
