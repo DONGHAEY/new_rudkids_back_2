@@ -12,6 +12,7 @@ import { GetUser } from 'src/auth/decorators/getUser.decorator';
 import { UserEntity } from './entity/user.entity';
 import JwtAuthGuard from 'src/auth/guards/auth.guard';
 import { UserService } from './user.service';
+import { EditNicknameDto } from './dto/editNickname.dto';
 
 @Controller('user')
 export class UserController {
@@ -24,8 +25,8 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/:nick_name')
-  async getOtherUser(@Param('nick_name') nickName: string) {
+  @Get('/:nickname')
+  async getOtherUser(@Param('nickname') nickName: string) {
     return await this.userService.getOtherUser(nickName);
   }
 
@@ -48,13 +49,21 @@ export class UserController {
     return await this.userService.updateImageUrl(user, imageUrl);
   }
 
+  @Post(':nickname/today_view_up')
+  async updateTodayView(@Param('nickname') nickname: string) {
+    return await this.userService.updateTodayView(nickname);
+  }
+
   @Patch('nickname')
   @UseGuards(JwtAuthGuard)
   async updateNickname(
     @GetUser() user: UserEntity,
-    @Body('nickname') nickname: string,
+    @Body() editNicknameDto: EditNicknameDto,
   ) {
-    return await this.userService.updateNickname(user, nickname);
+    return await this.userService.updateNickname(
+      user,
+      editNicknameDto.nickname,
+    );
   }
 
   @Patch('introduce')

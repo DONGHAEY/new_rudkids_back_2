@@ -15,17 +15,13 @@ import { UserEntity } from 'src/user/entity/user.entity';
 export class UserFollowController {
   constructor(private userFollowService: UserFollowService) {}
 
-  // @Get('/cnt')
-  // async getUserFollowerCnt(@Param('nickname') nickname: string) {
-  //   return await this.userFollowService.getUserFollowerCnt(nickname);
-  // }
-
   @Post()
   @UseGuards(JwtAuthGuard)
   async followUser(
     @GetUser() user: UserEntity,
     @Param('nickname') nickname: string,
   ) {
+    console.log('nickname', nickname);
     return await this.userFollowService.followUser(user, nickname);
   }
 
@@ -36,5 +32,13 @@ export class UserFollowController {
     @Param('nickname') nickname: string,
   ) {
     return await this.userFollowService.unFollowUser(user, nickname);
+  }
+
+  @Get('/status')
+  async getFollowStatus(
+    @GetUser() user: UserEntity,
+    @Param('nickname') nickname: string,
+  ) {
+    return await this.userFollowService.isFollower(user, nickname);
   }
 }

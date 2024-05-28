@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
-import { DataSource, Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { SmsService } from 'src/sms/sms.service';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -24,8 +24,6 @@ export class UserService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private smsService: SmsService,
     private userFollowService: UserFollowService,
-
-    private dataSource: DataSource,
   ) {}
 
   async editMobile(
@@ -126,12 +124,10 @@ export class UserService {
   }
 
   async updateLinks(user: UserEntity, links: string[]): Promise<void> {
-    console.log(links, '--');
     links = links?.filter((link) => link);
     user.links = '';
     links?.map((link) => (user.links += `${link},`));
     user.links = user.links.substring(0, user.links.length - 1);
-
     await user.save();
   }
 
@@ -150,19 +146,44 @@ export class UserService {
     const followerCnt = await this.userFollowService.getUserFollowerCnt(
       user.nickname,
     );
-    return plainToClass(UserResponseDto, { ...user, followerCnt, links });
+    const rank = await this.getUserRank(user);
+    return plainToClass(UserResponseDto, { ...user, followerCnt, links, rank });
   }
 
   async getOtherUser(nickname: string) {
     const user = await this.userRepository.findOneBy({ nickname });
     if (!user) throw new NotFoundException();
-    user.view.todayCnt++;
     const followerCnt = await this.userFollowService.getUserFollowerCnt(
       user.nickname,
     );
-    console.log(followerCnt, '-asdf-');
     const links = user.links.split(',')?.filter((link_) => link_);
+    const isFollower = await this.userFollowService.isFollower(user, nickname);
+    const rank = await this.getUserRank(user);
+    return plainToClass(UserResponseDto, {
+      ...user,
+      rank,
+      followerCnt,
+      isFollower,
+      links,
+    });
+  }
+
+  async updateTodayView(nickname: string): Promise<void> {
+    const user = await this.userRepository.findOneBy({
+      nickname,
+    });
+    if (!user) throw new NotFoundException();
+    user.view.todayCnt++;
     await user.save();
-    return plainToClass(UserResponseDto, { ...user, followerCnt, links });
+  }
+
+  private async getUserRank(user: UserEntity): Promise<number> {
+    const rank = await this.userRepository.countBy({
+      view: {
+        totalCnt: LessThan(user.view.totalCnt),
+        todayCnt: LessThan(user.view.todayCnt),
+      },
+    });
+    return rank + 1;
   }
 }

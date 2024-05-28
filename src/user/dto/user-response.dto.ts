@@ -32,5 +32,11 @@ export class UserResponseDto {
   isInvited: boolean;
 
   @Expose()
+  isFollower: boolean;
+
+  @Expose()
+  rank: number;
+
+  @Expose()
   followerCnt: number;
 }

@@ -27,6 +27,21 @@ export class UserFollowService {
     return cnt;
   }
 
+  async isFollower(me: UserEntity, targetNickname: string): Promise<boolean> {
+    let myFollow = await this.userFollowRepository.findOneBy({
+      targetUser: {
+        nickname: targetNickname,
+      },
+      follower: {
+        nickname: me.nickname,
+      },
+    });
+    if (myFollow) {
+      return true;
+    }
+    return false;
+  }
+
   async followUser(user: UserEntity, nickname: string): Promise<void> {
     let myFollow = await this.userFollowRepository.findOneBy({
       targetUser: {
