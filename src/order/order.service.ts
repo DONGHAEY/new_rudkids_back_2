@@ -62,7 +62,7 @@ export class OrderService {
           const newOrderProduct = new OrderProductEntity();
           newOrderProduct.name = cartProduct.product.name;
           newOrderProduct.price = cartProduct.product.price;
-          newOrderProduct.previewImageUrl = cartProduct.product.imageUrl;
+          newOrderProduct.previewImageUrl = cartProduct.product.thumnail;
           newOrderProduct.quantity = cartProduct.quantity;
           newOrderProduct.productId = String(cartProduct.product.id);
           await manager.save(newOrderProduct);

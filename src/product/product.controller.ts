@@ -14,14 +14,15 @@ import JwtAuthGuard from 'src/auth/guards/auth.guard';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import AdminCheckGuard from 'src/auth/guards/admin-check.guard';
+import { SearchRequestDto } from './dto/search-request.dto';
 
 @Controller('product')
 export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Get()
-  async getProductList(@Query('seasonName') seasonName: string) {
-    return await this.productService.getProductList(seasonName);
+  async getProductList(@Query() searchQueries: SearchRequestDto) {
+    return await this.productService.getProductList(searchQueries);
   }
 
   @Get('/:product_name')

@@ -48,6 +48,15 @@ export class UserController {
     return await this.userService.updateImageUrl(user, imageUrl);
   }
 
+  @Patch('nickname')
+  @UseGuards(JwtAuthGuard)
+  async updateNickname(
+    @GetUser() user: UserEntity,
+    @Body('nickname') nickname: string,
+  ) {
+    return await this.userService.updateNickname(user, nickname);
+  }
+
   @Patch('introduce')
   @UseGuards(JwtAuthGuard)
   async updateIntroduce(

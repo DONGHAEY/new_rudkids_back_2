@@ -25,6 +25,7 @@ export class AuthService {
     { email, name, mobile, birth }: OauthUserPaylod,
     res: Response,
   ) {
+    //
     let user: UserEntity = await this.userRepository.findOneBy({
       privacy: { email },
     });
@@ -39,6 +40,7 @@ export class AuthService {
         },
       });
     }
+    console.log(user);
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
     res

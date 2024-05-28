@@ -9,8 +9,7 @@ import { ProductEntity } from './entity/product.entity';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { SeasonEntity } from 'src/season/entity/season.entity';
-import { ListOfProductResponseDto } from './dto/ListOfProduct-response.dto';
-import { ProductComponentEntity } from 'src/product-component/entity/product-component.entity';
+import { SearchRequestDto } from './dto/search-request.dto';
 
 @Injectable()
 export class ProductService {
@@ -18,39 +17,18 @@ export class ProductService {
   constructor(
     @InjectRepository(ProductEntity)
     private productRepository: Repository<ProductEntity>,
-    @InjectRepository(ProductComponentEntity)
-    private productComponentRepository: Repository<ProductComponentEntity>,
     @InjectRepository(SeasonEntity)
     private seasonRepository: Repository<SeasonEntity>,
   ) {}
 
   async getProductList(
-    seasonName: string,
-  ): Promise<ListOfProductResponseDto[]> {
-    let where: any = {};
-    if (seasonName) {
-      where.name = seasonName;
-    }
-    const products = await this.productRepository.findBy(where);
-    return await Promise.all(
-      products?.map(async (product) => {
-        const presentComponent =
-          await this.productComponentRepository.findOneBy({
-            priority: 1,
-            product: {
-              id: product.id,
-            },
-          });
-        const listOfProductResponseDto = new ListOfProductResponseDto();
-        listOfProductResponseDto.id = product.id;
-        listOfProductResponseDto.thumnail = presentComponent
-          ? presentComponent.imageUrl
-          : product.imageUrl;
-        listOfProductResponseDto.name = product.name;
-        listOfProductResponseDto.isPackage = product.isPackage;
-        return listOfProductResponseDto;
-      }),
-    );
+    searchQueries: SearchRequestDto,
+  ): Promise<ProductEntity[]> {
+    //
+    const products = await this.productRepository.findBy({
+      ...searchQueries,
+    });
+    return products;
   }
 
   async getProduct(productName: string): Promise<ProductEntity> {
@@ -84,11 +62,12 @@ export class ProductService {
     //
     const newProduct = new ProductEntity();
     newProduct.name = createProductDto.name;
+    newProduct.type = createProductDto.type;
+    newProduct.thumnail = createProductDto.thumnail;
     newProduct.price = createProductDto.price;
-    newProduct.imageUrl = createProductDto.imageUrl;
-    newProduct.modelUrl = createProductDto.modelUrl;
     newProduct.isPackage = createProductDto.isPackage;
     newProduct.description = createProductDto.description;
+    newProduct.detailImageUrls = createProductDto.detailImageUrls;
     return await newProduct.save();
   }
 

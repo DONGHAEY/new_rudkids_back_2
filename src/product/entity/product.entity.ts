@@ -23,6 +23,11 @@ export class ProductEntity extends BaseEntity {
   season: SeasonEntity | Promise<SeasonEntity>;
 
   @Column({
+    default: 'none',
+  })
+  type: string;
+
+  @Column({
     unique: true,
   })
   name: string;
@@ -36,12 +41,13 @@ export class ProductEntity extends BaseEntity {
   @Column({
     type: 'longtext',
   })
-  imageUrl: string;
+  thumnail: string;
 
   @Column({
     type: 'longtext',
+    default: '',
   })
-  modelUrl: string;
+  detailImageUrls: string;
 
   @Column({
     default: false,

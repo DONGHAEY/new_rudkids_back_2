@@ -1,9 +1,20 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateProductDto {
+  //
   @IsNotEmpty()
   @IsString()
   name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  type: string;
 
   @IsNotEmpty()
   @IsNumber()
@@ -15,11 +26,7 @@ export class CreateProductDto {
 
   @IsNotEmpty()
   @IsString()
-  imageUrl: string;
-
-  @IsNotEmpty()
-  @IsString()
-  modelUrl: string;
+  thumnail: string;
 
   @IsNotEmpty()
   @IsString()
@@ -28,4 +35,8 @@ export class CreateProductDto {
   @IsNotEmpty()
   @IsBoolean()
   isPackage: boolean;
+
+  @IsOptional()
+  @IsString()
+  detailImageUrls: string;
 }

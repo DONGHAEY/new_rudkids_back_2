@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpException,
   HttpStatus,
   Inject,
@@ -91,6 +92,17 @@ export class UserService {
   async updateImageUrl(user: UserEntity, imageUrl: string) {
     user.imageUrl = imageUrl;
     await user.save();
+  }
+
+  async updateNickname(user: UserEntity, nickname: string): Promise<void> {
+    const sameNickUser = await this.userRepository.findOneBy({
+      nickname: nickname,
+    });
+    if (sameNickUser)
+      throw new ConflictException('같은 닉을 가진 유저가 있어용');
+    user.nickname = nickname;
+    await user.save();
+    return;
   }
 
   async updateInstagramId(
