@@ -43,6 +43,11 @@ export class ShippingEntity extends BaseEntity {
   recieverPhoneNumber: string;
 
   @Column({
+    nullable: true,
+  })
+  requestMemo: string;
+
+  @Column({
     default: false,
   })
   isDefault: boolean;

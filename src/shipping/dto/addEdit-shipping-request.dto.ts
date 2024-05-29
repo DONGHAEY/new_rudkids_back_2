@@ -21,6 +21,10 @@ export class AddEditShippingRequestDto {
   @IsString()
   recieverPhoneNumber: string;
 
+  @IsOptional()
+  @IsString()
+  requestMemo: string;
+
   @IsNotEmpty()
   @IsBoolean()
   isDefault: boolean;
