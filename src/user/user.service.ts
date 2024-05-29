@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
-import { LessThan, LessThanOrEqual, Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { SmsService } from 'src/sms/sms.service';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -174,6 +174,11 @@ export class UserService {
     });
     if (!user) throw new NotFoundException();
     user.view.todayCnt++;
+    await user.save();
+  }
+
+  async updateCardImgUrl(user: UserEntity, cardImgUrl: string) {
+    user.cardImgUrl = cardImgUrl;
     await user.save();
   }
 

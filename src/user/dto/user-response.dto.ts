@@ -13,6 +13,9 @@ export class UserResponseDto {
   nickname: string;
 
   @Expose()
+  cardImgUrl: string;
+
+  @Expose()
   imageUrl: string;
 
   @Expose()

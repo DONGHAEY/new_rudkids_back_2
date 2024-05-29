@@ -6,17 +6,24 @@ import {
   ParseArrayPipe,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { GetUser } from 'src/auth/decorators/getUser.decorator';
 import { UserEntity } from './entity/user.entity';
 import JwtAuthGuard from 'src/auth/guards/auth.guard';
 import { UserService } from './user.service';
 import { EditNicknameDto } from './dto/editNickname.dto';
+import { FileService } from 'src/file/file.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private fileService: FileService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('/my')
@@ -64,6 +71,22 @@ export class UserController {
       user,
       editNicknameDto.nickname,
     );
+  }
+
+  @Patch('cardImgUrl')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  async updateCardImgUrl(
+    @GetUser() user: UserEntity,
+    @UploadedFile('file') file: Express.Multer.File,
+  ) {
+    console.log(file, '--');
+    const uploadedFile = await this.fileService.saveFileToSupabase(
+      `${user.id}-card.svg`,
+      file.buffer,
+    );
+    return await this.userService.updateCardImgUrl(user, uploadedFile);
+    //
   }
 
   @Patch('introduce')

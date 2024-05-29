@@ -35,6 +35,13 @@ export class UserEntity extends BaseEntity {
   })
   imageUrl: string; //사진url
 
+  @Column({
+    default: null,
+    nullable: true,
+    type: 'longtext',
+  })
+  cardImgUrl: string;
+
   @Column((type) => ViewEmbeded)
   view: ViewEmbeded;
 
