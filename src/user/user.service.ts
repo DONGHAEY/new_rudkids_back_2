@@ -150,14 +150,14 @@ export class UserService {
     return plainToClass(UserResponseDto, { ...user, followerCnt, links, rank });
   }
 
-  async getOtherUser(nickname: string) {
-    const user = await this.userRepository.findOneBy({ nickname });
+  async getOtherUser(me: UserEntity, userId: string) {
+    const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) throw new NotFoundException();
     const followerCnt = await this.userFollowService.getUserFollowerCnt(
       user.nickname,
     );
     const links = user.links.split(',')?.filter((link_) => link_);
-    const isFollower = await this.userFollowService.isFollower(user, nickname);
+    const isFollower = await this.userFollowService.isFollower(me, userId);
     const rank = await this.getUserRank(user);
     return plainToClass(UserResponseDto, {
       ...user,
@@ -168,9 +168,9 @@ export class UserService {
     });
   }
 
-  async updateTodayView(nickname: string): Promise<void> {
+  async updateTodayView(userId: string): Promise<void> {
     const user = await this.userRepository.findOneBy({
-      nickname,
+      id: userId,
     });
     if (!user) throw new NotFoundException();
     user.view.todayCnt++;

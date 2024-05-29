@@ -27,13 +27,13 @@ export class UserFollowService {
     return cnt;
   }
 
-  async isFollower(me: UserEntity, targetNickname: string): Promise<boolean> {
+  async isFollower(me: UserEntity, targetUserId: string): Promise<boolean> {
     let myFollow = await this.userFollowRepository.findOneBy({
       targetUser: {
-        nickname: targetNickname,
+        id: targetUserId,
       },
       follower: {
-        nickname: me.nickname,
+        id: me.id,
       },
     });
     if (myFollow) {
@@ -42,16 +42,20 @@ export class UserFollowService {
     return false;
   }
 
-  async followUser(user: UserEntity, nickname: string): Promise<void> {
+  async followUser(user: UserEntity, targetUserId: string): Promise<void> {
     let myFollow = await this.userFollowRepository.findOneBy({
       targetUser: {
-        nickname: nickname,
+        id: targetUserId,
+      },
+      follower: {
+        id: user.id,
       },
     });
-    if (myFollow)
+    if (myFollow) {
       throw new HttpException('이미 팔로우가 되어있습니다.', HttpStatus.FOUND);
+    }
     const targetUser = await this.userRepository.findOneBy({
-      nickname,
+      id: targetUserId,
     });
     if (!targetUser) throw new NotFoundException();
     const newFollow = new UserFollowEntity();
@@ -60,10 +64,10 @@ export class UserFollowService {
     await newFollow.save();
   }
 
-  async unFollowUser(user: UserEntity, nickname: string): Promise<void> {
+  async unFollowUser(user: UserEntity, targetUserId: string): Promise<void> {
     let myFollow = await this.userFollowRepository.findOneBy({
       targetUser: {
-        nickname: nickname,
+        id: targetUserId,
       },
       follower: {
         id: user.id,

@@ -11,7 +11,7 @@ import JwtAuthGuard from 'src/auth/guards/auth.guard';
 import { GetUser } from 'src/auth/decorators/getUser.decorator';
 import { UserEntity } from 'src/user/entity/user.entity';
 
-@Controller('/user/:nickname/follow')
+@Controller('/user/:target_user_id/follow')
 export class UserFollowController {
   constructor(private userFollowService: UserFollowService) {}
 
@@ -19,26 +19,26 @@ export class UserFollowController {
   @UseGuards(JwtAuthGuard)
   async followUser(
     @GetUser() user: UserEntity,
-    @Param('nickname') nickname: string,
+    @Param('target_user_id') targetUserId: string,
   ) {
-    console.log('nickname', nickname);
-    return await this.userFollowService.followUser(user, nickname);
+    console.log('target_user_id', targetUserId);
+    return await this.userFollowService.followUser(user, targetUserId);
   }
 
   @Delete()
   @UseGuards(JwtAuthGuard)
   async unFollowUser(
     @GetUser() user: UserEntity,
-    @Param('nickname') nickname: string,
+    @Param('target_user_id') targetUserId: string,
   ) {
-    return await this.userFollowService.unFollowUser(user, nickname);
+    return await this.userFollowService.unFollowUser(user, targetUserId);
   }
 
   @Get('/status')
   async getFollowStatus(
     @GetUser() user: UserEntity,
-    @Param('nickname') nickname: string,
+    @Param('target_user_id') targetUserId: string,
   ) {
-    return await this.userFollowService.isFollower(user, nickname);
+    return await this.userFollowService.isFollower(user, targetUserId);
   }
 }

@@ -32,9 +32,12 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/:nickname')
-  async getOtherUser(@Param('nickname') nickName: string) {
-    return await this.userService.getOtherUser(nickName);
+  @Get('/:user_id')
+  async getOtherUser(
+    @GetUser() user: UserEntity,
+    @Param('user_id') userId: string,
+  ) {
+    return await this.userService.getOtherUser(user, userId);
   }
 
   @Patch('instagramId')
@@ -56,9 +59,9 @@ export class UserController {
     return await this.userService.updateImageUrl(user, imageUrl);
   }
 
-  @Post(':nickname/today_view_up')
-  async updateTodayView(@Param('nickname') nickname: string) {
-    return await this.userService.updateTodayView(nickname);
+  @Post(':user_id/today_view_up')
+  async updateTodayView(@Param('user_id') userId: string) {
+    return await this.userService.updateTodayView(userId);
   }
 
   @Patch('nickname')
@@ -80,7 +83,6 @@ export class UserController {
     @GetUser() user: UserEntity,
     @UploadedFile('file') file: Express.Multer.File,
   ) {
-    console.log(file, '--');
     const uploadedFile = await this.fileService.saveFileToSupabase(
       `${user.id}-card.svg`,
       file.buffer,
