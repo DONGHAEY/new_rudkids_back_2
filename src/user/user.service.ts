@@ -8,13 +8,14 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
-import { LessThanOrEqual, Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { SmsService } from 'src/sms/sms.service';
 import { UserResponseDto } from './dto/user-response.dto';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { UserFollowService } from './user-follow.service';
+import { SimpleUserDto } from './dto/simple-user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -25,6 +26,19 @@ export class UserService {
     private smsService: SmsService,
     private userFollowService: UserFollowService,
   ) {}
+
+  async getRankUserList(): Promise<SimpleUserDto[]> {
+    const rankUserList = await this.userRepository.find({
+      order: {
+        view: {
+          todayCnt: 'DESC',
+          totalCnt: 'DESC',
+        },
+      },
+      take: 8,
+    });
+    return plainToInstance(SimpleUserDto, rankUserList);
+  }
 
   async editMobile(
     user: UserEntity,
@@ -185,8 +199,8 @@ export class UserService {
   private async getUserRank(user: UserEntity): Promise<number> {
     const rank = await this.userRepository.countBy({
       view: {
-        totalCnt: LessThanOrEqual(user.view.totalCnt),
-        todayCnt: LessThanOrEqual(user.view.todayCnt),
+        totalCnt: MoreThanOrEqual(user.view.totalCnt),
+        todayCnt: MoreThanOrEqual(user.view.todayCnt),
       },
     });
     return rank;

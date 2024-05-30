@@ -31,6 +31,11 @@ export class UserController {
     return await this.userService.getMe(user);
   }
 
+  @Get('/rank')
+  async getRankUserList() {
+    return await this.userService.getRankUserList();
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('/:user_id')
   async getOtherUser(
@@ -88,7 +93,6 @@ export class UserController {
       file.buffer,
     );
     return await this.userService.updateCardImgUrl(user, uploadedFile);
-    //
   }
 
   @Patch('introduce')
