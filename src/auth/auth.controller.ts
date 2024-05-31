@@ -4,6 +4,7 @@ import { NaverAuthGuard } from './guards/naver-auth.guard';
 import { GetUser } from './decorators/getUser.decorator';
 import { OauthUserPaylod } from './payload/oauth-user.payload';
 import { Request } from 'express';
+import { KakaoAuthGuard } from './guards/kakao-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -18,11 +19,14 @@ export class AuthController {
     await this.authService.oauthLogin(oathUserPaylod, req.res);
   }
 
-  // @Get('/kakao')
-  // @UseGuards(KakaoAuthGuard)
-  // async kakaoLogin(@GetUser() oathUserPaylod: OauthUserPaylod): Promise<any> {
-  //   await this.authService.oauthLogin(oathUserPaylod);
-  // }
+  @Get('/kakao')
+  @UseGuards(KakaoAuthGuard)
+  async kakaoLogin(
+    @GetUser() oathUserPaylod: OauthUserPaylod,
+    @Req() req: Request,
+  ): Promise<any> {
+    await this.authService.oauthLogin(oathUserPaylod, req.res);
+  }
 
   //유저 조회 매서드 추가
 }

@@ -11,8 +11,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
       clientID: process.env['KAKAO_CLIENT_ID'],
       clientSecret: process.env['KAKAO_CLIENT_SECRET'],
       callbackURL: `${process.env['FRONTEND_URL']}/login-callback/kakao`,
-      //   scope: ['account_email', 'name', 'birthday'],
-      scope: ['account_email'],
+      scope: ['account_email', 'phone_number'],
     });
   }
 
@@ -22,12 +21,13 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: any,
   ): Promise<OauthUserPaylod> {
-    const { email, name } = profile._json.kakao_account;
+    const { email, phone_number } = profile._json.kakao_account;
+    console.log(profile._json.kakao_account);
     return {
       email,
-      name,
-      birth: '',
-      mobile: '',
+      mobile: phone_number,
+      // name,
+      // birth: '',
     };
   }
 }

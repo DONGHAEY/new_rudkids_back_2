@@ -5,11 +5,11 @@ export class PrivacyEmbeded {
   email: string;
 
   @Column()
-  name: string; //실명
-
-  @Column()
   mobile: string; //휴대전화번호
 
-  @Column()
-  birth: string; //생일
+  // @Column()
+  // name: string; //실명
+
+  // @Column()
+  // birth: string; //생일
 }

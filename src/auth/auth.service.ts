@@ -19,33 +19,24 @@ export class AuthService {
   static TOKEN_EXPIRE_DAYS = 3;
   static REFRESH_TOKEN_EXPIRE_DAYS = 60;
 
-  async oauthLogin(
-    { email, name, mobile, birth }: OauthUserPaylod,
-    res: Response,
-  ) {
+  async oauthLogin({ email, mobile }: OauthUserPaylod, res: Response) {
     //
-    console.log('1');
     let user: UserEntity = await this.userRepository.findOneBy({
       privacy: { email },
     });
 
-    console.log('2');
     if (!user) {
-      console.log('3');
       user = await this.userService.loginUser({
         privacy: {
-          name,
           email,
           mobile,
-          birth,
+          // name,
+          // birth,
         },
       });
-      console.log('4');
     }
-    console.log('5', user);
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
-    console.log('6');
     res
       .cookie('access_token', accessToken, {
         path: '/',
