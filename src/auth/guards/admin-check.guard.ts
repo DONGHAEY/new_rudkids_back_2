@@ -18,9 +18,7 @@ export default class AdminCheckGuard implements CanActivate {
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const user: UserEntity = request.user as UserEntity;
-    console.log(user, '--');
     if (!user) return false;
-
     const checkAdmin = this.reflector.get<boolean>(
       'check_admin',
       context.getHandler(),

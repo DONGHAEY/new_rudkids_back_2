@@ -23,10 +23,10 @@ export class FileController {
     @UploadedFile('file') file: Express.Multer.File,
     @Body('path') path: string,
   ) {
-    const arrayBuffer = bufferToArrayBuffer(file.buffer);
-    const blob = new Blob([arrayBuffer], {
-      type: file.mimetype,
-    });
-    return await this.fileService.saveFileToSupabase(path, blob);
+    return await this.fileService.saveFileToSupabase(
+      path,
+      file.buffer,
+      file.mimetype,
+    );
   }
 }

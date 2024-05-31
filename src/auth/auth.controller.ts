@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { NaverAuthGuard } from './guards/naver-auth.guard';
 import { GetUser } from './decorators/getUser.decorator';

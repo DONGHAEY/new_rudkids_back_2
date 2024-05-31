@@ -30,9 +30,12 @@ export class InstagramProfileService {
         responseType: 'arraybuffer',
       });
       const fileName = `${instagramId}-instagram.png`;
+      const contentType = imageFileResponse.headers['Content-Type'].toString();
+      console.log('adsjfkl;j', contentType);
       const savedInstagramImageUrl = await this.fileService.saveFileToSupabase(
         `/profile/${fileName}`,
         Buffer.from(imageFileResponse.data).buffer,
+        contentType,
       );
       return savedInstagramImageUrl;
     }

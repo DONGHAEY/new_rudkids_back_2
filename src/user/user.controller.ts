@@ -90,12 +90,10 @@ export class UserController {
     @GetUser() user: UserEntity,
     @UploadedFile('file') file: Express.Multer.File,
   ) {
-    const blob = new Blob([bufferToArrayBuffer(file.buffer)], {
-      type: file.mimetype,
-    });
     const uploadedFile = await this.fileService.saveFileToSupabase(
       `/rudcards/${user.id}-rudcard.svg`,
-      blob,
+      file.buffer,
+      file.mimetype,
     );
     return await this.userService.updateCardImgUrl(user, uploadedFile);
   }

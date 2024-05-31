@@ -53,7 +53,7 @@ export class UserEntity extends BaseEntity {
 
   @Column({
     type: 'longtext',
-    default: '',
+    default: '소개글이 없어요',
   })
   introduce: string; //소개글
 
