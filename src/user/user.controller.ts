@@ -18,7 +18,7 @@ import { EditNicknameDto } from './dto/editNickname.dto';
 import { FileService } from 'src/file/file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Blob } from 'buffer';
-import * as bufferToArrayBuffer from 'buffer-to-arraybuffer';
+import { OptionalJwtAuthGuard } from 'src/auth/guards/optional-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -38,7 +38,7 @@ export class UserController {
     return await this.userService.getRankUserList();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('/:user_id')
   async getOtherUser(
     @GetUser() user: UserEntity,

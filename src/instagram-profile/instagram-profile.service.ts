@@ -1,4 +1,4 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ApifyClient } from 'apify-client';
 import axios from 'axios';
 import { FileService } from 'src/file/file.service';

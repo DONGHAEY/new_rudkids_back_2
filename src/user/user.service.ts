@@ -171,7 +171,10 @@ export class UserService {
       user.nickname,
     );
     const links = user.links.split(',')?.filter((link_) => link_);
-    const isFollower = await this.userFollowService.isFollower(me, userId);
+    let isFollower = false;
+    if (me) {
+      isFollower = await this.userFollowService.isFollower(me, userId);
+    }
     const rank = await this.getUserRank(user);
     return plainToClass(UserResponseDto, {
       ...user,

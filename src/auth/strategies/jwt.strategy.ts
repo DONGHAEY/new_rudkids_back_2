@@ -33,7 +33,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       id: payload?.userId,
     });
     if (!userInfo) throw new UnauthorizedException();
-    console.log(payload);
     if (payload.type == 'access_token') {
       return userInfo;
     } else if (payload.type === 'refresh_token') {
