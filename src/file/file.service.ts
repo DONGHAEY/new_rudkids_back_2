@@ -1,10 +1,5 @@
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import {
-  ConflictException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class FileService {
@@ -18,7 +13,7 @@ export class FileService {
 
   async saveFileToSupabase(
     relativeDirPath: string = '',
-    file: ArrayBuffer | ArrayBufferView | Blob | Buffer | File,
+    file: any,
   ): Promise<string> {
     try {
       const { error, data } = await FileService.supabaseStorage.storage
