@@ -12,7 +12,7 @@ async function bootstrap() {
       process.env.FRONTEND_URL,
       'http://localhost:3000',
       'http://localhost:3001',
-      'http://192.168.1.22:3001',
+      'http://172.16.101.157:3001',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
