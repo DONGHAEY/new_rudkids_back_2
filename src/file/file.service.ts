@@ -27,13 +27,6 @@ export class FileService {
           upsert: true,
         });
 
-      // const { data, error } = await FileService.supabaseStorage.storage
-      //   .from('rudkids')
-      //   .uploadToSignedUrl(
-      //     relativeDirPath,
-      //     'token-from-createSignedUploadUrl',
-      //     file,
-      //   );
       if (error) {
         throw new ConflictException('에러남 ㅅㄱ');
       }

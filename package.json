@@ -33,6 +33,7 @@
     "@supabase/supabase-js": "^2.42.7",
     "apify-client": "^2.9.3",
     "axios": "^1.6.8",
+    "buffer": "^6.0.3",
     "cheerio": "^1.0.0-rc.12",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
