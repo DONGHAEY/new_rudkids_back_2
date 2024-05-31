@@ -17,6 +17,7 @@ import { UserService } from './user.service';
 import { EditNicknameDto } from './dto/editNickname.dto';
 import { FileService } from 'src/file/file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { File } from 'buffer';
 
 @Controller('user')
 export class UserController {
@@ -88,9 +89,12 @@ export class UserController {
     @GetUser() user: UserEntity,
     @UploadedFile('file') file: Express.Multer.File,
   ) {
+    const file_ = new File([file.buffer], `${user.id}-card.svg`, {
+      type: file.mimetype,
+    });
     const uploadedFile = await this.fileService.saveFileToSupabase(
-      `${user.id}-card.svg`,
-      file.buffer,
+      `/rudcards/${user.id}-rudcard.svg`,
+      file_,
     );
     return await this.userService.updateCardImgUrl(user, uploadedFile);
   }
