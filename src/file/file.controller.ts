@@ -9,7 +9,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import JwtAuthGuard from 'src/auth/guards/auth.guard';
 import { FileService } from './file.service';
-import { File } from 'buffer';
+import { Blob } from 'buffer';
 
 @Controller('file')
 export class FileController {
@@ -22,9 +22,9 @@ export class FileController {
     @UploadedFile('file') file: Express.Multer.File,
     @Body('path') path: string,
   ) {
-    const gg = new File([file.buffer], '', {
+    const blob = new Blob([file.buffer], {
       type: file.mimetype,
     });
-    return await this.fileService.saveFileToSupabase(path, gg);
+    return await this.fileService.saveFileToSupabase(path, blob);
   }
 }
