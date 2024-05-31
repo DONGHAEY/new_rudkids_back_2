@@ -17,7 +17,8 @@ import { UserService } from './user.service';
 import { EditNicknameDto } from './dto/editNickname.dto';
 import { FileService } from 'src/file/file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Blob, File } from 'buffer';
+import { Blob } from 'buffer';
+import * as bufferToArrayBuffer from 'buffer-to-arraybuffer';
 
 @Controller('user')
 export class UserController {
@@ -89,7 +90,7 @@ export class UserController {
     @GetUser() user: UserEntity,
     @UploadedFile('file') file: Express.Multer.File,
   ) {
-    const blob = new Blob([file.buffer], {
+    const blob = new Blob([bufferToArrayBuffer(file.buffer)], {
       type: file.mimetype,
     });
     const uploadedFile = await this.fileService.saveFileToSupabase(

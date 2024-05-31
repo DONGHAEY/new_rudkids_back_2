@@ -6,8 +6,6 @@ import { Repository } from 'typeorm';
 import { OauthUserPaylod } from './payload/oauth-user.payload';
 import { Response } from 'express';
 import { UserService } from 'src/user/user.service';
-import { plainToClass } from 'class-transformer';
-import { RegisterUserDto } from 'src/user/dto/registerUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,11 +24,14 @@ export class AuthService {
     res: Response,
   ) {
     //
+    console.log('1');
     let user: UserEntity = await this.userRepository.findOneBy({
       privacy: { email },
     });
 
+    console.log('2');
     if (!user) {
+      console.log('3');
       user = await this.userService.loginUser({
         privacy: {
           name,
@@ -39,10 +40,12 @@ export class AuthService {
           birth,
         },
       });
+      console.log('4');
     }
-    console.log(user);
+    console.log('5', user);
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
+    console.log('6');
     res
       .cookie('access_token', accessToken, {
         path: '/',

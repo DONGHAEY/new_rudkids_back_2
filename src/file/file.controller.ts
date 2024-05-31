@@ -10,6 +10,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import JwtAuthGuard from 'src/auth/guards/auth.guard';
 import { FileService } from './file.service';
 import { Blob } from 'buffer';
+import * as bufferToArrayBuffer from 'buffer-to-arraybuffer';
 
 @Controller('file')
 export class FileController {
@@ -22,7 +23,8 @@ export class FileController {
     @UploadedFile('file') file: Express.Multer.File,
     @Body('path') path: string,
   ) {
-    const blob = new Blob([file.buffer], {
+    const arrayBuffer = bufferToArrayBuffer(file.buffer);
+    const blob = new Blob([arrayBuffer], {
       type: file.mimetype,
     });
     return await this.fileService.saveFileToSupabase(path, blob);
