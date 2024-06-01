@@ -13,6 +13,7 @@ async function bootstrap() {
       'http://localhost:3000',
       'http://localhost:3001',
       'http://172.16.101.157:3001',
+      'http://192.168.0.3:3001',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });

@@ -17,7 +17,6 @@ import { UserService } from './user.service';
 import { EditNicknameDto } from './dto/editNickname.dto';
 import { FileService } from 'src/file/file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Blob } from 'buffer';
 import { OptionalJwtAuthGuard } from 'src/auth/guards/optional-auth.guard';
 
 @Controller('user')

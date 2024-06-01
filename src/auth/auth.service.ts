@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
@@ -26,12 +26,10 @@ export class AuthService {
     });
 
     if (!user) {
-      user = await this.userService.loginUser({
+      user = await this.userService.registerUser({
         privacy: {
           email,
           mobile,
-          // name,
-          // birth,
         },
       });
     }

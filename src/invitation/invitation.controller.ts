@@ -6,6 +6,7 @@ import { InvitationService } from './invitation.service';
 
 @Controller('invitation')
 export class InvitationController {
+  //
   constructor(private invitationService: InvitationService) {}
 
   @Post('/friend')

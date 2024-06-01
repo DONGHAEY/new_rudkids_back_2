@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvitationEntity } from './entity/invitation.entity';
-import { DataSource, Not, Repository } from 'typeorm';
+import { DataSource, EntityManager, Not, Repository } from 'typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { FindInvitationResponseDto } from './dto/find-invitation-response.dto';
 import { plainToClass, plainToInstance } from 'class-transformer';
@@ -114,7 +114,7 @@ export class InvitationService {
         id: invitationId,
       });
       if (!invitation) {
-        throw new NotFoundException();
+        throw new NotFoundException('존재하지 않는 초대권입니다.');
       }
       if (invitation.school) {
         acceptor.school = invitation.school;

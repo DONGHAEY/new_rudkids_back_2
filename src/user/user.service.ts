@@ -69,7 +69,7 @@ export class UserService {
     await this.smsService.sendSms(mobile, message);
   }
 
-  async loginUser(registerUserDto: RegisterUserDto): Promise<UserEntity> {
+  async registerUser(registerUserDto: RegisterUserDto): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({
       privacy: [
         {
@@ -79,16 +79,18 @@ export class UserService {
       ],
     });
     if (user) {
-      return user;
+      throw new HttpException('이미 존재하는 유저입니다', HttpStatus.FOUND);
     }
-    await this.checkSameMobile(registerUserDto.privacy.mobile);
+    //
     let randomNickname = 'rudkid_';
     randomNickname += Math.random().toString(36).substring(2, 6);
     const sameNicknameUser = await this.userRepository.findOneBy({
       nickname: randomNickname,
     });
-    if (sameNicknameUser) return await this.loginUser(registerUserDto);
-    const createdUser = this.userRepository
+    if (sameNicknameUser) {
+      return await this.registerUser(registerUserDto);
+    }
+    const createdUser = await this.userRepository
       .create({
         privacy: {
           ...registerUserDto.privacy,
@@ -98,7 +100,7 @@ export class UserService {
         imageUrl: '',
       })
       .save();
-    return await createdUser;
+    return createdUser;
   }
 
   async updateImageUrl(user: UserEntity, imageUrl: string) {
@@ -143,16 +145,6 @@ export class UserService {
     links?.map((link) => (user.links += `${link},`));
     user.links = user.links.substring(0, user.links.length - 1);
     await user.save();
-  }
-
-  private async checkSameMobile(mobile: string): Promise<void> {
-    const sameMobileUser = await this.userRepository.findOneBy({
-      privacy: {
-        mobile,
-      },
-    });
-    if (sameMobileUser)
-      throw new HttpException('same name user', HttpStatus.FOUND);
   }
 
   async getMe(user: UserEntity): Promise<UserResponseDto> {
