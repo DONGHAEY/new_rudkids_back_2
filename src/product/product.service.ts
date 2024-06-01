@@ -25,8 +25,14 @@ export class ProductService {
     searchQueries: SearchRequestDto,
   ): Promise<ProductEntity[]> {
     //
+    const searchQ = {};
+    Object.keys(searchQueries).forEach((key: any) => {
+      if (searchQueries[key]) {
+        searchQ[key] = searchQueries[key];
+      }
+    });
     const products = await this.productRepository.findBy({
-      ...searchQueries,
+      ...searchQ,
     });
     return products;
   }
