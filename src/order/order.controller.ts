@@ -13,8 +13,8 @@ import AdminCheckGuard from 'src/auth/guards/admin-check.guard';
 import JwtAuthGuard from 'src/auth/guards/auth.guard';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { OrderService } from './order.service';
-import { CreateOrderRequestDto } from './dto/create-order-request.dto';
-import { PatchShippingRequestDto } from './dto/patch-shipping-request.dto';
+import { CreateOrderDto } from './dto/request/create-order.dto';
+import { PatchShippingDto } from './dto/request/patch-shipping.dto';
 
 @Controller('order')
 @UseGuards(JwtAuthGuard, AdminCheckGuard)
@@ -29,15 +29,16 @@ export class OrderController {
   @Post()
   async createOrder(
     @GetUser() user: UserEntity,
-    @Body() createOrderDto: CreateOrderRequestDto,
+    @Body() createOrderDto: CreateOrderDto,
   ) {
+    console.log(createOrderDto);
     return await this.orderService.createOrder(user, createOrderDto);
   }
 
   @Patch('/:order_id/shipping')
   async patchShippingInfo(
     @Param('order_id') orderId: string,
-    @Body() patchShippingRequestDto: PatchShippingRequestDto,
+    @Body() patchShippingRequestDto: PatchShippingDto,
   ) {
     //배송지를 수정할 수 있을것
     return await this.orderService.patchShippingInfo(

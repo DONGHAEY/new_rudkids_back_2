@@ -1,7 +1,7 @@
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { Shipping } from '../type/shipping';
+import { Shipping } from '../../type/shipping';
 
-export class PatchShippingRequestDto implements Shipping {
+export class PatchShippingDto implements Shipping {
   @IsNotEmpty()
   @IsString()
   address: string;

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entity/user.entity';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { IsNull, MoreThanOrEqual, Not, Repository } from 'typeorm';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { SmsService } from 'src/sms/sms.service';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -29,6 +29,9 @@ export class UserService {
 
   async getRankUserList(): Promise<SimpleUserDto[]> {
     const rankUserList = await this.userRepository.find({
+      where: {
+        instagramId: Not(IsNull()),
+      },
       order: {
         view: {
           todayCnt: 'DESC',

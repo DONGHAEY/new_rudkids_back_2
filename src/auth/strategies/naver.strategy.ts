@@ -20,11 +20,9 @@ export class NaverStrategy extends PassportStrategy(Strategy) {
     profile: any,
     done: any,
   ): Promise<OauthUserPaylod> {
-    const { email, name, birthday: birth, mobile } = profile._json.response;
+    const { email, mobile } = profile._json.response;
     return plainToClass(OauthUserPaylod, {
       email,
-      name,
-      birth,
       mobile,
     });
   }

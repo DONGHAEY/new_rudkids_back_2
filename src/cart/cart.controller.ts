@@ -13,7 +13,8 @@ import { GetUser } from 'src/auth/decorators/getUser.decorator';
 import JwtAuthGuard from 'src/auth/guards/auth.guard';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { CartService } from './cart.service';
-import { PutCartprodQuantityDto } from './dto/put-cartprod-amount.dto';
+import { PutCartprodQuantityDto } from './dto/request/put-cartprod-amount.dto';
+import { AddToCartDto } from './dto/request/add-to-cart.dto';
 
 @Controller('cart')
 @UseGuards(JwtAuthGuard)
@@ -33,9 +34,9 @@ export class CartController {
   @Post('cart_product')
   async addProductToCart(
     @GetUser() user: UserEntity,
-    @Body('productId', ParseIntPipe) productId: number,
+    @Body() addToCartRequestDto: AddToCartDto,
   ) {
-    return await this.cartService.addProductToCart(user, productId);
+    return await this.cartService.addProductToCart(user, addToCartRequestDto);
   }
 
   @Patch('/cart_product/:product_id/quantity')

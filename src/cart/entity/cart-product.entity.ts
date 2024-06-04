@@ -6,10 +6,13 @@ import {
   Entity,
   Generated,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryColumn,
 } from 'typeorm';
 import { CartEntity } from './cart.entity';
+import { ProductOptionEntity } from 'src/product/entity/option.entity';
 
 @Entity('cart-product')
 export class CartProductEntity extends BaseEntity {
@@ -39,6 +42,12 @@ export class CartProductEntity extends BaseEntity {
   })
   @JoinColumn()
   product: ProductEntity;
+
+  @ManyToMany(() => ProductOptionEntity, {
+    eager: true,
+  })
+  @JoinTable()
+  options: ProductOptionEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

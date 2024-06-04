@@ -7,9 +7,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from './entity/product.entity';
 import { Repository } from 'typeorm';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto } from './dto/request/create-product.dto';
 import { SeasonEntity } from 'src/season/entity/season.entity';
-import { SearchRequestDto } from './dto/search-request.dto';
+import { SearchRequestDto } from './dto/request/search-request.dto';
 
 @Injectable()
 export class ProductService {
@@ -43,6 +43,7 @@ export class ProductService {
         name: productName,
       },
       relations: {
+        optionGroups: true,
         components: true,
       },
       order: {
@@ -65,7 +66,6 @@ export class ProductService {
     });
     if (!season) throw new NotFoundException('존재하지 않는 season입니다');
     await this.checkSameProduct(createProductDto.name);
-    //
     const newProduct = new ProductEntity();
     newProduct.name = createProductDto.name;
     newProduct.type = createProductDto.type;

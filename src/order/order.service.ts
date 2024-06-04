@@ -11,8 +11,9 @@ import { DataSource, Repository } from 'typeorm';
 import { CartEntity } from 'src/cart/entity/cart.entity';
 import { CartProductEntity } from 'src/cart/entity/cart-product.entity';
 import { OrderProductEntity } from './entity/order-product.entity';
-import { CreateOrderRequestDto } from './dto/create-order-request.dto';
-import { PatchShippingRequestDto } from './dto/patch-shipping-request.dto';
+import { CreateOrderDto } from './dto/request/create-order.dto';
+import { PatchShippingDto } from './dto/request/patch-shipping.dto';
+import { ProductOptionEntity } from './entity/option.entity';
 
 @Injectable()
 export class OrderService {
@@ -35,7 +36,7 @@ export class OrderService {
 
   async createOrder(
     user: UserEntity,
-    createOrderDto: CreateOrderRequestDto,
+    createOrderDto: CreateOrderDto,
   ): Promise<OrderEntity> {
     return this.dataSource.transaction(async (manager) => {
       const cart = await manager.findOne(CartEntity, {
@@ -65,10 +66,18 @@ export class OrderService {
           newOrderProduct.previewImageUrl = cartProduct.product.thumnail;
           newOrderProduct.quantity = cartProduct.quantity;
           newOrderProduct.productId = String(cartProduct.product.id);
+          newOrderProduct.options = await Promise.all(
+            cartProduct.options?.map(async (option) => {
+              const optionEm = new ProductOptionEntity();
+              optionEm.groupName = (await option.optionGroup).name;
+              optionEm.name = option.name;
+              optionEm.price = option.price;
+              newOrderProduct.price += option.price;
+              return await manager.save(optionEm);
+            }),
+          );
           await manager.save(newOrderProduct);
-          //
           newOrder.orderProducts.push(newOrderProduct);
-
           newOrder.price.orderProducts +=
             cartProduct.product.price * cartProduct.quantity;
         }),
@@ -80,13 +89,14 @@ export class OrderService {
       if (newOrder.totalPrice <= 0) {
         newOrder.totalPrice = 1;
       }
+      console.log(newOrder);
       return await manager.save(newOrder);
     });
   }
 
   async patchShippingInfo(
     orderId: string,
-    shippingDto: PatchShippingRequestDto,
+    shippingDto: PatchShippingDto,
   ): Promise<void> {
     const order = await this.orderRepository.findOne({
       where: {

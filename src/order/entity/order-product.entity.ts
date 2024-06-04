@@ -4,9 +4,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrderEntity } from './order.entity';
+import { ProductOptionEntity } from './option.entity';
 
 @Entity('order-product')
 export class OrderProductEntity extends BaseEntity {
@@ -37,6 +39,14 @@ export class OrderProductEntity extends BaseEntity {
     nullable: false,
   })
   productId: string;
+
+  @OneToMany(
+    () => ProductOptionEntity,
+    (productOption) => productOption.orderProduct,
+    { eager: true },
+  )
+  @JoinColumn()
+  options: ProductOptionEntity[];
 
   @ManyToOne(
     (type) => OrderEntity,

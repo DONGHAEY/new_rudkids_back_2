@@ -9,6 +9,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ProductOptionGroupEntity } from './option-group.entity';
 
 @Entity('product')
 export class ProductEntity extends BaseEntity {
@@ -35,13 +36,13 @@ export class ProductEntity extends BaseEntity {
   @Column()
   price: number;
 
-  @Column()
-  description: string;
-
   @Column({
     type: 'longtext',
   })
   thumnail: string;
+
+  @Column()
+  description: string;
 
   @Column({
     type: 'longtext',
@@ -54,6 +55,14 @@ export class ProductEntity extends BaseEntity {
   })
   isPackage: boolean;
 
+  @OneToMany(
+    () => ProductOptionGroupEntity,
+    (optionGroupEntity) => optionGroupEntity.product,
+  )
+  @JoinColumn()
+  optionGroups: ProductOptionGroupEntity[];
+
+  //아래의 이름을 model3ds로 변경하면 좋을듯.
   @OneToMany(
     (type) => ProductComponentEntity,
     (productComponentEntity) => productComponentEntity.product,
