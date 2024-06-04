@@ -79,7 +79,7 @@ export class OrderService {
           await manager.save(newOrderProduct);
           newOrder.orderProducts.push(newOrderProduct);
           newOrder.price.orderProducts +=
-            cartProduct.product.price * cartProduct.quantity;
+            newOrderProduct.price * cartProduct.quantity;
         }),
       );
       newOrder.totalPrice = Object.values(newOrder.price).reduce(
@@ -89,7 +89,6 @@ export class OrderService {
       if (newOrder.totalPrice <= 0) {
         newOrder.totalPrice = 1;
       }
-      console.log(newOrder);
       return await manager.save(newOrder);
     });
   }
