@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
@@ -47,6 +47,22 @@ export class AuthService {
         httpOnly: true,
         maxAge: 3600000 * 24 * AuthService.REFRESH_TOKEN_EXPIRE_DAYS,
         // domain: 'rud.kids',
+      })
+      .send();
+  }
+
+  async tossTesterLogin(res: Response) {
+    console.log('-');
+    const testerUser = await this.userRepository.findOneBy({
+      nickname: 'rudkid_tester',
+    });
+    if (!testerUser) return;
+    const accessToken = this.generateAccessToken(testerUser);
+    res
+      .cookie('access_token', accessToken, {
+        path: '/',
+        httpOnly: true,
+        maxAge: 3600000 * 24 * AuthService.TOKEN_EXPIRE_DAYS,
       })
       .send();
   }
