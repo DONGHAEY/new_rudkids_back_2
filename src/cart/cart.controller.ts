@@ -39,25 +39,20 @@ export class CartController {
     return await this.cartService.addProductToCart(user, addToCartRequestDto);
   }
 
-  @Patch('/cart_product/:product_id/quantity')
+  @Patch('/cart_product/:cart_product_id/quantity')
   async patchCartprodAmount(
-    @GetUser() user: UserEntity,
-    @Param('product_id', ParseIntPipe) productId: number,
+    @Param('cart_product_id') cartProdId: string,
     @Body() putCartprodQuantityDto: PutCartprodQuantityDto,
   ) {
     return await this.cartService.patchCartprodAmount(
-      user,
-      productId,
+      cartProdId,
       putCartprodQuantityDto,
     );
   }
 
-  @Delete('/cart_product/:product_id')
-  async deleteCartprod(
-    @GetUser() user: UserEntity,
-    @Param('product_id', ParseIntPipe) productId: number,
-  ) {
-    return await this.cartService.deleteCartproduct(user, productId);
+  @Delete('/cart_product/:cart_product_id')
+  async deleteCartprod(@Param('cart_product_id') cartProdId: string) {
+    return await this.cartService.deleteCartproduct(cartProdId);
   }
 
   @Delete()

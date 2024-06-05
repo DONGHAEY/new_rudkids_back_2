@@ -111,11 +111,25 @@ export class CartService {
         optionGroups: true,
       },
     });
+
     if (!product) throw new NotFoundException('유효한 상품을 찾을 수 없습니다');
-    let cartProduct = await this.getCartproduct(cart.id, product.id);
-    if (cartProduct) {
-      throw new ConflictException('이미 저장된 아이템');
-    }
+    let cartProducts = await this.cartProductRepository.findBy({
+      cart: { id: cart.id },
+      product: { id: product.id },
+    });
+
+    /***  */
+    cartProducts?.map((cartProduct) => {
+      let sameOptionCnt = 0;
+      cartProduct.options?.map((option) => {
+        if (addToCartRequestDto.optionIds?.includes(option.id)) {
+          sameOptionCnt++;
+        }
+      });
+      if (sameOptionCnt === cartProduct.options.length) {
+        throw new ConflictException('이미 저장된 아이템');
+      }
+    });
 
     await this.dataSource.transaction(async (manager) => {
       const productOptions = await manager.findBy(ProductOptionEntity, {
@@ -126,7 +140,7 @@ export class CartService {
           },
         },
       });
-
+      //
       const productOptionGroups = product?.optionGroups;
       productOptionGroups?.map((productOptionGroup) => {
         const options = productOptionGroup.options;
@@ -142,7 +156,6 @@ export class CartService {
           );
         }
       });
-
       //똑같은 옵션 그룹을 선택했는지 체크
       if (productOptions?.length !== productOptionGroups.length) {
         throw new HttpException(
@@ -155,42 +168,27 @@ export class CartService {
       newCartProduct.product = product;
       newCartProduct.quantity = 1;
       newCartProduct.options = productOptions;
-      await manager.save(newCartProduct);
-      cart.cartProducts.push(cartProduct);
+      await newCartProduct.save();
+      cart.cartProducts.push(newCartProduct);
       await cart.save();
     });
   }
 
-  private async getCartproduct(cartId: string, productId: number) {
+  async deleteCartproduct(id: string): Promise<void> {
     const cartProduct = await this.cartProductRepository.findOneBy({
-      product: {
-        id: productId,
-      },
-      cart: {
-        id: cartId,
-      },
+      id,
     });
-    return cartProduct;
-  }
-
-  async deleteCartproduct(user: UserEntity, productId: number): Promise<void> {
-    const cart = await this.cartRepository.findOneBy({
-      user: {
-        id: user.id,
-      },
-    });
-    const cartProduct = await this.getCartproduct(cart.id, productId);
     if (!cartProduct) throw new NotFoundException();
     await cartProduct.remove();
   }
 
   async patchCartprodAmount(
-    user: UserEntity,
-    productId: number,
+    id: string,
     putCartprodAmountDto: PutCartprodQuantityDto,
   ): Promise<CartProductEntity> {
-    const cart = await this.getCart(user);
-    const cartProduct = await this.getCartproduct(cart.id, productId);
+    const cartProduct = await this.cartProductRepository.findOneBy({
+      id,
+    });
     if (!cartProduct) throw new NotFoundException();
     cartProduct.quantity = putCartprodAmountDto.quantity;
     await cartProduct.save();
