@@ -54,7 +54,7 @@ export class AuthService {
   async tossTesterLogin(res: Response) {
     console.log('-');
     const testerUser = await this.userRepository.findOneBy({
-      nickname: 'rudkid_tester',
+      nickname: 'tosspayments',
     });
     if (!testerUser) return;
     const accessToken = this.generateAccessToken(testerUser);
@@ -69,7 +69,7 @@ export class AuthService {
 
   generateAccessToken(user: UserEntity): string {
     const token = this.jwtService.sign(
-      { userId: user.id, type: 'access_token' },
+      { userId: user.id, isAdmin: user.isAdmin, type: 'access_token' },
       {
         secret: process.env.JWT_SCRET_KEY,
         algorithm: 'HS256',
@@ -81,7 +81,7 @@ export class AuthService {
 
   private generateRefreshToken(user: UserEntity): string {
     const refreshToken = this.jwtService.sign(
-      { userId: user.id, type: 'refresh_token' },
+      { userId: user.id, isAdmin: user.isAdmin, type: 'refresh_token' },
       {
         secret: process.env.JWT_SCRET_KEY,
         algorithm: 'HS256',

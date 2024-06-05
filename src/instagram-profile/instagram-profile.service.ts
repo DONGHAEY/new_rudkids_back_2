@@ -33,7 +33,7 @@ export class InstagramProfileService {
       const contentType =
         imageFileResponse?.headers?.['Content-Type']?.toString() ?? 'image/png';
       const savedInstagramImageUrl = await this.fileService.saveFileToSupabase(
-        `/profile/${fileName}`,
+        `/instagram-profiles/${fileName}`,
         Buffer.from(imageFileResponse.data).buffer,
         contentType,
       );

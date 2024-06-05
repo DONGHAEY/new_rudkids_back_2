@@ -68,6 +68,7 @@ export class ProductService {
     await this.checkSameProduct(createProductDto.name);
     const newProduct = new ProductEntity();
     newProduct.name = createProductDto.name;
+    newProduct.season = season;
     newProduct.type = createProductDto.type;
     newProduct.thumnail = createProductDto.thumnail;
     newProduct.price = createProductDto.price;
