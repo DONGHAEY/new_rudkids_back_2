@@ -19,6 +19,8 @@ import { SearchRequestDto } from './dto/request/search-request.dto';
 import { OptionService } from './option.service';
 import { CreateOptionDto } from './dto/request/create-option.dto';
 import { CreateOptionGroupDto } from './dto/request/create-option-group.dto';
+import { OffsetPageRequestDto } from 'src/dto/pagination/page-request.dto';
+import { plainToClass } from 'class-transformer';
 
 @Controller('product')
 export class ProductController {
@@ -29,8 +31,20 @@ export class ProductController {
   ) {}
 
   @Get()
-  async getProductList(@Query() searchQueries: SearchRequestDto) {
-    return await this.productService.getProductList(searchQueries);
+  async getProductList(
+    @Query() searchQueries: SearchRequestDto,
+    @Query() offsetPageReqDto: OffsetPageRequestDto,
+  ) {
+    searchQueries = plainToClass(SearchRequestDto, searchQueries, {
+      strategy: 'exposeAll',
+    });
+    offsetPageReqDto = plainToClass(OffsetPageRequestDto, offsetPageReqDto, {
+      strategy: 'exposeAll',
+    });
+    return await this.productService.getProductList(
+      searchQueries,
+      offsetPageReqDto,
+    );
   }
 
   @Get('/:product_name')

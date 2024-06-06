@@ -10,6 +10,9 @@ import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/request/create-product.dto';
 import { SeasonEntity } from 'src/season/entity/season.entity';
 import { SearchRequestDto } from './dto/request/search-request.dto';
+import { OffsetPageRequestDto } from 'src/dto/pagination/page-request.dto';
+import { OffsetPageMetaDto } from 'src/dto/pagination/page-meta.dto';
+import { PageResponseDto } from 'src/dto/pagination/page-response.dto';
 
 @Injectable()
 export class ProductService {
@@ -23,18 +26,25 @@ export class ProductService {
 
   async getProductList(
     searchQueries: SearchRequestDto,
-  ): Promise<ProductEntity[]> {
-    //
+    offsetPageRequest: OffsetPageRequestDto,
+  ): Promise<PageResponseDto<ProductEntity>> {
     const searchQ = {};
+
     Object.keys(searchQueries).forEach((key: any) => {
       if (searchQueries[key]) {
         searchQ[key] = searchQueries[key];
       }
     });
-    const products = await this.productRepository.findBy({
-      ...searchQ,
+    const [products, total] = await this.productRepository.findAndCount({
+      where: searchQ,
+      take: offsetPageRequest.take,
+      skip: offsetPageRequest.skip,
     });
-    return products;
+    const meta = new OffsetPageMetaDto({
+      total,
+      offsetPageRequest,
+    });
+    return new PageResponseDto<ProductEntity>(products, meta);
   }
 
   async getProduct(productName: string): Promise<ProductEntity> {

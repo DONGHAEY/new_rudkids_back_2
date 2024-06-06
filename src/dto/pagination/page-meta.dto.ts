@@ -4,13 +4,13 @@ export class CursorPageMeta {
   readonly total: number;
   readonly take: number;
   readonly hasNextData: boolean | null;
-  readonly cursor: number;
+  readonly cursor: number | string;
 
   constructor(meta: {
     total: number;
     hasNextData: boolean | null;
     take: number;
-    cursor: number;
+    cursor: number | string;
   }) {
     this.total = meta.total;
     this.hasNextData = meta.hasNextData;

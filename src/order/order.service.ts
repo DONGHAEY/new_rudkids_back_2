@@ -7,13 +7,16 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { OrderEntity } from './entity/order.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, LessThan, MoreThan, Repository } from 'typeorm';
 import { CartEntity } from 'src/cart/entity/cart.entity';
 import { CartProductEntity } from 'src/cart/entity/cart-product.entity';
 import { OrderProductEntity } from './entity/order-product.entity';
 import { CreateOrderDto } from './dto/request/create-order.dto';
 import { PatchShippingDto } from './dto/request/patch-shipping.dto';
 import { ProductOptionEntity } from './entity/option.entity';
+import { CursorPageRequestDto } from 'src/dto/pagination/page-request.dto';
+import { CursorPageMeta } from 'src/dto/pagination/page-meta.dto';
+import { PageResponseDto } from 'src/dto/pagination/page-response.dto';
 
 @Injectable()
 export class OrderService {
@@ -113,17 +116,38 @@ export class OrderService {
     await order.save();
   }
 
-  async getUserOrders(user: UserEntity): Promise<OrderEntity[]> {
-    const orders = await this.orderRepository.find({
+  async getUserOrders(
+    user: UserEntity,
+    cursorPageRequestDto: CursorPageRequestDto,
+  ): Promise<PageResponseDto<OrderEntity>> {
+    const cursorOrder = await this.orderRepository.findOneBy({
+      id: cursorPageRequestDto.cursorId as string,
+    });
+
+    const [orders, total] = await this.orderRepository.findAndCount({
       where: {
         orderer: {
           id: user.id,
         },
+        createdAt: LessThan(cursorOrder ? cursorOrder.createdAt : null),
       },
+      take: cursorPageRequestDto.take ?? 4,
       order: {
         createdAt: 'DESC',
       },
     });
-    return orders;
+    const isLast = await this.orderRepository.countBy({
+      orderer: {
+        id: user.id,
+      },
+      createdAt: LessThan(orders[orders.length - 1]?.createdAt ?? null),
+    });
+    const cursorPageMeta = new CursorPageMeta({
+      total,
+      take: cursorPageRequestDto.take,
+      cursor: orders[orders.length - 1]?.id as string,
+      hasNextData: isLast ? true : false,
+    });
+    return new PageResponseDto(orders, cursorPageMeta);
   }
 }

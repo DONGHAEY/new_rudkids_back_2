@@ -22,7 +22,12 @@ async function bootstrap() {
       // excludeExtraneousValues: true,
     }),
   );
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
   app.setGlobalPrefix('api');
   await app.listen(3000);
 }

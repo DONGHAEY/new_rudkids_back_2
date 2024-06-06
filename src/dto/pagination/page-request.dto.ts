@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsOptional } from 'class-validator';
 import { Order } from './page-order.enum';
 
 export class CursorPageRequestDto {
@@ -8,13 +8,14 @@ export class CursorPageRequestDto {
   @IsOptional()
   readonly sort?: Order = Order.DESC;
 
-  @Type(() => Number)
+  @IsNumber()
   @IsOptional()
+  @Type(() => Number)
   readonly take?: number;
 
-  @Type(() => String)
   @IsOptional()
-  readonly cursorId?: number = '' as any;
+  @Type(() => String)
+  readonly cursorId?: string = '' as any;
 }
 
 export class OffsetPageRequestDto {

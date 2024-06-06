@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CheckAdmin } from 'src/auth/decorators/checkAdmin.decorator';
@@ -15,6 +16,7 @@ import { UserEntity } from 'src/user/entity/user.entity';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/request/create-order.dto';
 import { PatchShippingDto } from './dto/request/patch-shipping.dto';
+import { CursorPageRequestDto } from 'src/dto/pagination/page-request.dto';
 
 @Controller('order')
 @UseGuards(JwtAuthGuard, AdminCheckGuard)
@@ -22,8 +24,11 @@ export class OrderController {
   constructor(private orderService: OrderService) {}
 
   @Get()
-  async getMyOrders(@GetUser() user: UserEntity) {
-    return await this.orderService.getUserOrders(user);
+  async getMyOrders(
+    @GetUser() user: UserEntity,
+    @Query() cursorPageRequestDto: CursorPageRequestDto,
+  ) {
+    return await this.orderService.getUserOrders(user, cursorPageRequestDto);
   }
 
   @Post()
