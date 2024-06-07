@@ -41,23 +41,19 @@ export class PaymentService implements OnModuleInit {
   }
 
   async createPayment(createPaymentDto: CreatePaymentRequestDto) {
-    const order = await this.orderRepository.findOne({
-      where: {
-        id: createPaymentDto.orderId,
-      },
+    const order = await this.orderRepository.findOneBy({
+      id: createPaymentDto.orderId,
     });
     if (!order) throw new NotFoundException();
     if (order.payment) {
       throw new ConflictException('해당 주문의 결제는 이미 생성되었습니다.');
     }
-
     if (order.totalPrice !== createPaymentDto.amount) {
       throw new HttpException(
         '거래 금액이 일치하지 않습니다',
         HttpStatus.MISDIRECTED,
       );
     }
-
     try {
       await PaymentService.tossAPIAxios.post('/v1/payments/confirm', {
         paymentKey: createPaymentDto.paymentKey,
@@ -65,13 +61,11 @@ export class PaymentService implements OnModuleInit {
         amount: createPaymentDto.amount,
       });
     } catch (e) {
-      console.log(e?.response?.data, e?.response?.stauts, '--------');
       throw new HttpException(
         e?.response?.data?.message,
         HttpStatus.BAD_REQUEST,
       );
     }
-    //
     const payment = await this.paymentRepository
       .create({
         paymentKey: createPaymentDto.paymentKey,
@@ -79,6 +73,7 @@ export class PaymentService implements OnModuleInit {
         amount: createPaymentDto.amount,
       })
       .save();
+    //
     order.payment = payment;
     await order.save();
     return payment;

@@ -5,12 +5,14 @@ import {
   Entity,
   Generated,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   PrimaryColumn,
 } from 'typeorm';
 import { PrivacyEmbeded } from './embeded/privacy.embeded';
 import { SchoolEntity } from 'src/school/entity/school.entity';
 import { ViewEmbeded } from './embeded/view.embeded';
+import { ProductEntity } from 'src/product/entity/product.entity';
 
 @Entity('user')
 export class UserEntity extends BaseEntity {
@@ -82,6 +84,12 @@ export class UserEntity extends BaseEntity {
   })
   @JoinColumn()
   inviter: UserEntity | Promise<UserEntity>; //초대자
+
+  // @ManyToMany((type) => ProductEntity, {
+  //   lazy: true,
+  // })
+  // @JoinColumn()
+  // collectedProducts: ProductEntity[] | Promise<ProductEntity[]>;
 
   @Column({
     default: false,

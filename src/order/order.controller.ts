@@ -36,7 +36,6 @@ export class OrderController {
     @GetUser() user: UserEntity,
     @Body() createOrderDto: CreateOrderDto,
   ) {
-    console.log(createOrderDto);
     return await this.orderService.createOrder(user, createOrderDto);
   }
 

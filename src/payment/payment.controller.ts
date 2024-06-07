@@ -11,7 +11,6 @@ export class PaymentController {
   //
   @Post()
   async createPayment(@Body() createPaymentDto: CreatePaymentRequestDto) {
-    //paymentKey, orderId
     return await this.paymentService.createPayment(createPaymentDto);
   }
 

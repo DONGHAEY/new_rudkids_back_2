@@ -15,6 +15,7 @@ import { PaymentModule } from './payment/payment.module';
 import { SeasonModule } from './season/season.module';
 import { InvitationModule } from './invitation/invitation.module';
 import { InstagramProfileModule } from './instagram-profile/instagram-profile.module';
+import { CollectionModule } from './collection/collection.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { InstagramProfileModule } from './instagram-profile/instagram-profile.mo
     SeasonModule,
     InvitationModule,
     InstagramProfileModule,
+    CollectionModule,
   ],
 })
 export class AppModule {}

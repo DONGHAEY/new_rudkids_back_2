@@ -8,7 +8,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { OrderEntity } from './order.entity';
-import { ProductOptionEntity } from './option.entity';
+import { ProductOptionEntity } from './order-product-option.entity';
+import { ProductEntity } from 'src/product/entity/product.entity';
 
 @Entity('order-product')
 export class OrderProductEntity extends BaseEntity {
@@ -28,7 +29,7 @@ export class OrderProductEntity extends BaseEntity {
   @Column({
     type: 'longtext',
   })
-  previewImageUrl: string;
+  thumnail: string;
 
   @Column({
     default: 1,
@@ -36,6 +37,7 @@ export class OrderProductEntity extends BaseEntity {
   quantity: number;
 
   @Column({
+    name: 'productId',
     nullable: false,
   })
   productId: string;

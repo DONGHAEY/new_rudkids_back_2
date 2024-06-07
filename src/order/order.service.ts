@@ -7,13 +7,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { OrderEntity } from './entity/order.entity';
-import { DataSource, LessThan, MoreThan, Repository } from 'typeorm';
+import { DataSource, LessThan, Repository } from 'typeorm';
 import { CartEntity } from 'src/cart/entity/cart.entity';
 import { CartProductEntity } from 'src/cart/entity/cart-product.entity';
 import { OrderProductEntity } from './entity/order-product.entity';
 import { CreateOrderDto } from './dto/request/create-order.dto';
 import { PatchShippingDto } from './dto/request/patch-shipping.dto';
-import { ProductOptionEntity } from './entity/option.entity';
+import { ProductOptionEntity } from './entity/order-product-option.entity';
 import { CursorPageRequestDto } from 'src/dto/pagination/page-request.dto';
 import { CursorPageMeta } from 'src/dto/pagination/page-meta.dto';
 import { PageResponseDto } from 'src/dto/pagination/page-response.dto';
@@ -31,6 +31,10 @@ export class OrderService {
     const order = await this.orderRepository.findOne({
       where: {
         id: orderId,
+      },
+      relations: {
+        orderProducts: true,
+        payment: true,
       },
     });
     if (!order) throw new NotFoundException();
@@ -66,7 +70,7 @@ export class OrderService {
           const newOrderProduct = new OrderProductEntity();
           newOrderProduct.name = cartProduct.product.name;
           newOrderProduct.price = cartProduct.product.price;
-          newOrderProduct.previewImageUrl = cartProduct.product.thumnail;
+          newOrderProduct.thumnail = cartProduct.product.thumnail;
           newOrderProduct.quantity = cartProduct.quantity;
           newOrderProduct.productId = String(cartProduct.product.id);
           newOrderProduct.options = await Promise.all(
@@ -119,21 +123,24 @@ export class OrderService {
   async getUserOrders(
     user: UserEntity,
     cursorPageRequestDto: CursorPageRequestDto,
-  ): Promise<PageResponseDto<OrderEntity>> {
+  ): Promise<PageResponseDto<any>> {
+    //
     const cursorOrder = await this.orderRepository.findOneBy({
       id: cursorPageRequestDto.cursorId as string,
     });
-
     const [orders, total] = await this.orderRepository.findAndCount({
       where: {
         orderer: {
           id: user.id,
         },
-        createdAt: LessThan(cursorOrder ? cursorOrder.createdAt : null),
+        createdAt: cursorOrder ? LessThan(cursorOrder.createdAt) : undefined,
       },
       take: cursorPageRequestDto.take ?? 4,
       order: {
         createdAt: 'DESC',
+      },
+      relations: {
+        orderProducts: true,
       },
     });
     const isLast = await this.orderRepository.countBy({
@@ -148,6 +155,15 @@ export class OrderService {
       cursor: orders[orders.length - 1]?.id as string,
       hasNextData: isLast ? true : false,
     });
-    return new PageResponseDto(orders, cursorPageMeta);
+    return new PageResponseDto(
+      orders?.map((order) => {
+        return {
+          id: order.id,
+          createdAt: order.createdAt,
+          orderProducts: order.orderProducts,
+        };
+      }),
+      cursorPageMeta,
+    );
   }
 }
