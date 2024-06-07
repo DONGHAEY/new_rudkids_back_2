@@ -1,22 +1,47 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CollectedProduct } from './entity/collected-product.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { OffsetPageRequestDto } from 'src/dto/pagination/page-request.dto';
 import { OffsetPageMetaDto } from 'src/dto/pagination/page-meta.dto';
 import { PageResponseDto } from 'src/dto/pagination/page-response.dto';
 import { CollectedProductDto } from './dto/response/collected-product.dto';
 import { ProductEntity } from 'src/product/entity/product.entity';
+import { OrderEntity } from 'src/order/entity/order.entity';
+import { OrderProductEntity } from 'src/order/entity/order-product.entity';
+import { PaymentEntity } from 'src/payment/entity/payment.entity';
 
 @Injectable()
 export class CollectionService {
   constructor(
     @InjectRepository(CollectedProduct)
     private collectedProductRepo: Repository<CollectedProduct>,
+    private dataSource: DataSource,
   ) {}
 
-  // async query
+  async getQueryBasedCollection(
+    userId: string,
+    offsetPageRequest: OffsetPageRequestDto,
+  ): Promise<OrderProductEntity[]> {
+    const orderProducts = await this.dataSource.transaction(async (manager) => {
+      return await manager
+        .createQueryBuilder(OrderProductEntity, 'OrderProduct')
+        .innerJoin(OrderEntity, 'Order', 'Order.id = OrderProduct.orderId')
+        .where('Order.ordererId = :ordererId', { ordererId: userId })
+        .innerJoin(PaymentEntity, 'Payment', 'Order.id = Payment.orderId')
+        .andWhere(`Payment.status = 'completed'`)
+        .select('OrderProduct')
+        .addSelect('Min(Order.createdAt)', 'CA')
+        .groupBy('OrderProduct.productId')
+        .orderBy('CA', 'ASC')
+        // .skip(offsetPageRequest.skip)
+        // .take(offsetPageRequest.take)
+        .getMany();
+    });
+
+    return orderProducts;
+  }
 
   async getMyCollection(
     user: UserEntity,

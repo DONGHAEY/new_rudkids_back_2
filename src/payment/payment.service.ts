@@ -71,6 +71,7 @@ export class PaymentService implements OnModuleInit {
         paymentKey: createPaymentDto.paymentKey,
         status: PayStatusEnum.COMPLETED,
         amount: createPaymentDto.amount,
+        order,
       })
       .save();
     //
