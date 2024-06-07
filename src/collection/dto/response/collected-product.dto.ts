@@ -1,11 +1,11 @@
-export class CollectedProductDto {
-  readonly productId: any;
-  readonly name: string;
-  readonly thumnail: string;
+import { Exclude, Expose } from 'class-transformer';
 
-  constructor(productId: any, name: string, thumnail: string) {
-    this.productId = productId;
-    this.name = name;
-    this.thumnail = thumnail;
-  }
+@Exclude()
+export class CollectedProductDto {
+  @Expose()
+  productId: any;
+  @Expose()
+  name: string;
+  @Expose()
+  thumnail: string;
 }
