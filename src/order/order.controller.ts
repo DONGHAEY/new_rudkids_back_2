@@ -61,6 +61,11 @@ export class OrderController {
   // @CheckAdmin()
   // async searchOrders(@Query() searchOrdersDto: any) {}
 
+  @Get('/my-1st-order-nth')
+  async getMy1stOrderNth(@GetUser() user: UserEntity) {
+    return await this.orderService.get1stOrderNth(user);
+  }
+
   @Patch('/:order_id/shipping/trackingNumber')
   @CheckAdmin()
   async patchOrder(

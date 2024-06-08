@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { OrderEntity } from './entity/order.entity';
-import { DataSource, LessThan, Repository } from 'typeorm';
+import { DataSource, LessThan, MoreThan, Repository } from 'typeorm';
 import { CartEntity } from 'src/cart/entity/cart.entity';
 import { CartProductEntity } from 'src/cart/entity/cart-product.entity';
 import { OrderProductEntity } from './entity/order-product.entity';
@@ -17,6 +17,7 @@ import { ProductOptionEntity } from './entity/order-product-option.entity';
 import { CursorPageRequestDto } from 'src/dto/pagination/page-request.dto';
 import { CursorPageMeta } from 'src/dto/pagination/page-meta.dto';
 import { PageResponseDto } from 'src/dto/pagination/page-response.dto';
+import PayStatusEnum from 'src/payment/enum/pay-status.enum';
 
 @Injectable()
 export class OrderService {
@@ -118,6 +119,25 @@ export class OrderService {
     }
     order.shipping = shippingDto;
     await order.save();
+  }
+
+  async get1stOrderNth(user: UserEntity) {
+    const count = await this.dataSource.transaction(async (manager) => {
+      const order = await manager.findOneBy(OrderEntity, {
+        payment: {
+          status: PayStatusEnum.COMPLETED,
+        },
+        orderer: {
+          id: user.id,
+        },
+      });
+      if (!order) throw new NotFoundException();
+      const count = await this.orderRepository.countBy({
+        createdAt: MoreThan(order.createdAt),
+      });
+      return count;
+    });
+    return count + 1;
   }
 
   async getUserOrders(
