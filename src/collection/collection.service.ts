@@ -5,20 +5,15 @@ import { OrderProductEntity } from 'src/order/entity/order-product.entity';
 import { PaymentEntity } from 'src/payment/entity/payment.entity';
 import { plainToInstance } from 'class-transformer';
 import { CollectedProductDto } from './dto/response/collected-product.dto';
-import { GetCollectionDto } from './dto/response/get-collection.dto';
-import { UserEntity } from 'src/user/entity/user.entity';
 
 @Injectable()
 export class CollectionService {
   constructor(private dataSource: DataSource) {}
 
-  async getQueryBasedCollection(userId: string): Promise<GetCollectionDto> {
-    let user: UserEntity = null;
+  async getQueryBasedCollection(
+    userId: string,
+  ): Promise<CollectedProductDto[]> {
     const orderProducts = await this.dataSource.transaction(async (manager) => {
-      user = await manager.findOneBy(UserEntity, {
-        id: userId,
-      });
-      if (!user) throw new NotFoundException();
       return await manager
         .createQueryBuilder(OrderProductEntity, 'OrderProduct')
         .innerJoin(OrderEntity, 'Order', 'Order.id = OrderProduct.orderId')
@@ -37,7 +32,6 @@ export class CollectionService {
       CollectedProductDto,
       orderProducts,
     );
-    const responseDto = new GetCollectionDto(user.nickname, collectedProducts);
-    return responseDto;
+    return collectedProducts;
   }
 }

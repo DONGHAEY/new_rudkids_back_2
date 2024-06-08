@@ -15,23 +15,13 @@ import { UserEntity } from 'src/user/entity/user.entity';
 export class UserFollowController {
   constructor(private userFollowService: UserFollowService) {}
 
-  @Post()
+  @Post('/toggle')
   @UseGuards(JwtAuthGuard)
-  async followUser(
+  async toggleFollowUser(
     @GetUser() user: UserEntity,
     @Param('target_user_id') targetUserId: string,
   ) {
-    console.log('target_user_id', targetUserId);
-    return await this.userFollowService.followUser(user, targetUserId);
-  }
-
-  @Delete()
-  @UseGuards(JwtAuthGuard)
-  async unFollowUser(
-    @GetUser() user: UserEntity,
-    @Param('target_user_id') targetUserId: string,
-  ) {
-    return await this.userFollowService.unFollowUser(user, targetUserId);
+    return await this.userFollowService.toggleFollow(user, targetUserId);
   }
 
   @Get('/status')

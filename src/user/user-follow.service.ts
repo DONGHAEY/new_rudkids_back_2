@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserFollowEntity } from './entity/user-follow.entity';
 import { Repository } from 'typeorm';
@@ -27,6 +22,23 @@ export class UserFollowService {
     return cnt;
   }
 
+  async toggleFollow(me: UserEntity, targetUserId: string) {
+    let myFollow = await this.userFollowRepository.findOneBy({
+      targetUser: {
+        id: targetUserId,
+      },
+      follower: {
+        id: me.id,
+      },
+    });
+    //
+    if (myFollow) {
+      await myFollow.remove();
+    } else {
+      await this.followUser(me, targetUserId);
+    }
+  }
+
   async isFollower(me: UserEntity, targetUserId: string): Promise<boolean> {
     let myFollow = await this.userFollowRepository.findOneBy({
       targetUser: {
@@ -42,18 +54,10 @@ export class UserFollowService {
     return false;
   }
 
-  async followUser(user: UserEntity, targetUserId: string): Promise<void> {
-    let myFollow = await this.userFollowRepository.findOneBy({
-      targetUser: {
-        id: targetUserId,
-      },
-      follower: {
-        id: user.id,
-      },
-    });
-    if (myFollow) {
-      throw new HttpException('이미 팔로우가 되어있습니다.', HttpStatus.FOUND);
-    }
+  private async followUser(
+    user: UserEntity,
+    targetUserId: string,
+  ): Promise<void> {
     const targetUser = await this.userRepository.findOneBy({
       id: targetUserId,
     });
@@ -62,19 +66,5 @@ export class UserFollowService {
     newFollow.targetUser = targetUser;
     newFollow.follower = user;
     await newFollow.save();
-  }
-
-  async unFollowUser(user: UserEntity, targetUserId: string): Promise<void> {
-    let myFollow = await this.userFollowRepository.findOneBy({
-      targetUser: {
-        id: targetUserId,
-      },
-      follower: {
-        id: user.id,
-      },
-    });
-    if (!myFollow)
-      throw new NotFoundException('팔로우가 되어있지 않은 상태입니다');
-    await myFollow.remove();
   }
 }
