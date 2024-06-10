@@ -96,6 +96,11 @@ export class UserEntity extends BaseEntity {
   })
   isInvited: boolean;
 
+  @Column({
+    default: false,
+  })
+  isFirstInviteFinished: boolean;
+
   @CreateDateColumn()
   createdAt: Date; //가입일
 }

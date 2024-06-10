@@ -29,7 +29,7 @@ export class CartEntity extends BaseEntity {
   user: UserEntity | Promise<UserEntity>;
 
   @Column({
-    default: 3000,
+    default: 1,
   })
   shippingPrice: number; //배송비
 

@@ -114,4 +114,10 @@ export class UserController {
   ) {
     return await this.userService.updateLinks(user, links);
   }
+
+  @Patch('set-firstInviteFinished')
+  @UseGuards(JwtAuthGuard)
+  async setFirstInviteFinished(@GetUser() user: UserEntity) {
+    return await this.userService.setFirstInviteFinished(user);
+  }
 }

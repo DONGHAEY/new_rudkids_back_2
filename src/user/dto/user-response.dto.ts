@@ -41,5 +41,8 @@ export class UserResponseDto {
   rank: number;
 
   @Expose()
+  isFirstInviteFinished: boolean;
+
+  @Expose()
   followerCnt: number;
 }

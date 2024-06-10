@@ -194,6 +194,11 @@ export class UserService {
     await user.save();
   }
 
+  async setFirstInviteFinished(user: UserEntity): Promise<void> {
+    user.isFirstInviteFinished = true;
+    await user.save();
+  }
+
   private async getUserRank(user: UserEntity): Promise<number> {
     const rank = await this.userRepository.countBy({
       view: {
