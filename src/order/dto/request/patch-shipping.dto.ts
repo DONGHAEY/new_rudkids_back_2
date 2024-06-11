@@ -4,6 +4,10 @@ import { Shipping } from '../../type/shipping';
 export class PatchShippingDto implements Shipping {
   @IsNotEmpty()
   @IsString()
+  id: string;
+
+  @IsNotEmpty()
+  @IsString()
   address: string;
 
   @IsOptional()

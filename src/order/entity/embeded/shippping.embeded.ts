@@ -1,6 +1,9 @@
 import { Column } from 'typeorm';
 
 export class ShippingEmbeded {
+  @Column()
+  id: string;
+
   @Column({
     nullable: false,
   })
