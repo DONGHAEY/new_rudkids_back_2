@@ -14,6 +14,12 @@ export class FindInvitationResponseDto extends InvitationEntity {
   fromImageUrl: string;
 
   @Expose()
+  invitorId: string | null; //Inviter 식별자
+
+  @Expose()
+  type: string;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()

@@ -61,10 +61,14 @@ export class InvitationService {
     });
     if (!invitation) return null;
 
+    let type = '';
+    let invitorId = null;
     let friends = [];
     let otherUsers: UserEntity[] = [];
     let invitedUsers: UserEntity[] = [];
     if (invitation.school) {
+      type = 'school';
+      invitorId = invitation.school.name;
       invitedUsers = await this.userRepository.find({
         where: {
           school: {
@@ -82,6 +86,8 @@ export class InvitationService {
         take: 최대표시유저 - invitedUsers.length,
       });
     } else if (invitation.inviter) {
+      type = 'friend';
+      invitorId = invitation.inviter.id;
       invitedUsers = await this.userRepository.find({
         where: {
           inviter: {
@@ -101,9 +107,10 @@ export class InvitationService {
     }
 
     friends = [...invitedUsers, ...otherUsers];
-
     return plainToClass(FindInvitationResponseDto, {
       ...invitation,
+      type,
+      invitorId,
       friends: plainToInstance(FriendDto, friends),
     });
   }

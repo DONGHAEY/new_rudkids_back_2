@@ -32,7 +32,6 @@ export class OrderEntity extends BaseEntity {
   @Column((type) => ShippingEmbeded)
   shipping: ShippingEmbeded; //배송정보
 
-  //
   @Column(() => PriceEmbeded)
   price: PriceEmbeded; //가격정보
 
