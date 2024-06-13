@@ -9,21 +9,16 @@ import {
 } from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { ProductOptionEntity } from './order-product-option.entity';
-import { ProductEntity } from 'src/product/entity/product.entity';
 
 @Entity('order-product')
 export class OrderProductEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({
-    nullable: false,
-  })
+  @Column()
   name: string;
 
-  @Column({
-    nullable: false,
-  })
+  @Column()
   price: number;
 
   @Column({

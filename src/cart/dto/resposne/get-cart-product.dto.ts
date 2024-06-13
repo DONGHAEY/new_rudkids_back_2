@@ -15,12 +15,12 @@ export class CartProductDto {
   name: string;
   price: number;
   thumnail: string;
-  selectedOptions: SelectedOptionDto[];
+  options: SelectedOptionDto[];
 }
 
 export class SelectedOptionDto {
   id: string;
   groupName: string;
-  optionName: string;
+  name: string;
   price: number;
 }

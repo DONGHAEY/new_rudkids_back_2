@@ -66,12 +66,12 @@ export class CartService {
         cartProductResponseDto.price = cartProduct.product.price;
         cartProductResponseDto.thumnail = cartProduct.product.thumnail;
         cartProductResponseDto.quantity = cartProduct.quantity;
-        cartProductResponseDto.selectedOptions = await Promise.all(
+        cartProductResponseDto.options = await Promise.all(
           cartProduct?.options.map(async (option: ProductOptionEntity) => {
             const selectedOptionDto = new SelectedOptionDto();
             selectedOptionDto.id = option.id;
             selectedOptionDto.groupName = (await option?.optionGroup).name;
-            selectedOptionDto.optionName = option.name;
+            selectedOptionDto.name = option.name;
             selectedOptionDto.price = option.price;
             cartProductResponseDto.price += option.price;
             return selectedOptionDto;
