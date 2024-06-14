@@ -12,7 +12,6 @@ import {
 import { PrivacyEmbeded } from './embeded/privacy.embeded';
 import { SchoolEntity } from 'src/school/entity/school.entity';
 import { ViewEmbeded } from './embeded/view.embeded';
-import { ProductEntity } from 'src/product/entity/product.entity';
 
 @Entity('user')
 export class UserEntity extends BaseEntity {
@@ -95,6 +94,9 @@ export class UserEntity extends BaseEntity {
     default: false,
   })
   isInvited: boolean;
+
+  @Column()
+  firstPaidNum: number;
 
   @Column({
     default: false,

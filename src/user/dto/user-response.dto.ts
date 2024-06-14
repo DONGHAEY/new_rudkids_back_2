@@ -45,4 +45,7 @@ export class UserResponseDto {
 
   @Expose()
   followerCnt: number;
+
+  @Expose()
+  firstPaidNum: number;
 }

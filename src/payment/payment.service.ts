@@ -24,6 +24,8 @@ export class PaymentService implements OnModuleInit {
     private paymentRepository: Repository<PaymentEntity>,
     @InjectRepository(OrderEntity)
     private orderRepository: Repository<OrderEntity>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
   ) {}
 
   private static tossAPIAxios: Axios = null;
@@ -41,8 +43,9 @@ export class PaymentService implements OnModuleInit {
   }
 
   async createPayment(createPaymentDto: CreatePaymentRequestDto) {
-    const order = await this.orderRepository.findOneBy({
-      id: createPaymentDto.orderId,
+    const order = await this.orderRepository.findOne({
+      where: { id: createPaymentDto.orderId },
+      relations: { orderer: true },
     });
     if (!order) throw new NotFoundException();
     if (order.payment) {
@@ -75,6 +78,16 @@ export class PaymentService implements OnModuleInit {
       })
       .save();
     //
+    if (!order.orderer.firstPaidNum) {
+      const lastPaidUser = await this.userRepository.findOne({
+        where: {},
+        order: {
+          firstPaidNum: 'DESC',
+        },
+      });
+      order.orderer.firstPaidNum = (lastPaidUser?.firstPaidNum || 0) + 1;
+      await order.orderer.save();
+    }
     order.payment = payment;
     await order.save();
     return payment;

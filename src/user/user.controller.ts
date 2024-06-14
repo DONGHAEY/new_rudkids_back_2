@@ -90,7 +90,7 @@ export class UserController {
     @UploadedFile('file') file: Express.Multer.File,
   ) {
     const uploadedFile = await this.fileService.saveFileToSupabase(
-      `/rudcards/${user.id}-rudcard.svg`,
+      `/rudcards/${user.id}-rudcard`,
       file.buffer,
       file.mimetype,
     );

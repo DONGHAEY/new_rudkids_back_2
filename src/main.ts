@@ -8,7 +8,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors({
     credentials: true,
-    origin: [process.env.FRONTEND_URL],
+    origin: [process.env.FRONTEND_URL, 'http://192.168.0.6:3001'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
   app.useGlobalInterceptors(
