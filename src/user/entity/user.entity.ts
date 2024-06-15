@@ -95,7 +95,9 @@ export class UserEntity extends BaseEntity {
   })
   isInvited: boolean;
 
-  @Column()
+  @Column({
+    default: null,
+  })
   firstPaidNum: number;
 
   @Column({
