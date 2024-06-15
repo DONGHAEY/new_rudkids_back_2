@@ -35,6 +35,7 @@ export class AuthService {
     }
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
+
     res
       .cookie('access_token', accessToken, {
         path: '/',
