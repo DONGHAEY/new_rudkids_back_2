@@ -26,10 +26,9 @@ export class UserController {
     private fileService: FileService,
   ) {}
 
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('/my')
   async getMyUser(@GetUser() user: UserEntity) {
-    if (!user) return null;
     return await this.userService.getMe(user);
   }
 
