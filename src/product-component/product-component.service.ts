@@ -20,7 +20,7 @@ export class ProductComponentService {
   ) {}
 
   async createProductComponent(
-    productId: number,
+    productId: string,
     createProductComponentDto: CreateProductComponentDto,
   ): Promise<void> {
     const product = await this.productRepository.findOneBy({
@@ -42,7 +42,7 @@ export class ProductComponentService {
   }
 
   private async checkSameProductComponent(
-    productId: number,
+    productId: string,
     productComponentName: string,
   ): Promise<void> {
     const sameProductComponent =
@@ -57,7 +57,7 @@ export class ProductComponentService {
     }
   }
 
-  async delteProductComponent(productComponentId: number): Promise<void> {
+  async delteProductComponent(productComponentId: string): Promise<void> {
     const productComponent = await this.productComponentRepository.findOneBy({
       id: productComponentId,
     });

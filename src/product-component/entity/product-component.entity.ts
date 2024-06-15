@@ -3,17 +3,19 @@ import {
   BaseEntity,
   Column,
   Entity,
+  Generated,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Unique,
 } from 'typeorm';
 
 @Entity('product-component')
 @Unique(['name', 'product'])
 export class ProductComponentEntity extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  @Generated('uuid')
+  id: string;
 
   @ManyToOne(
     (type) => ProductEntity,

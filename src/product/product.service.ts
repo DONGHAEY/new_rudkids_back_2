@@ -79,7 +79,7 @@ export class ProductService {
     const newProduct = new ProductEntity();
     newProduct.name = createProductDto.name;
     newProduct.season = season;
-    newProduct.type = createProductDto.type;
+    newProduct.category = createProductDto.category;
     newProduct.thumnail = createProductDto.thumnail;
     newProduct.price = createProductDto.price;
     newProduct.isPackage = createProductDto.isPackage;
@@ -97,7 +97,7 @@ export class ProductService {
     }
   }
 
-  async deleteProduct(productId: number): Promise<void> {
+  async deleteProduct(productId: string): Promise<void> {
     const product = await this.productRepository.findOneBy({
       id: productId,
     });

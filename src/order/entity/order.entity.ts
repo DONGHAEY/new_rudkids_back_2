@@ -18,7 +18,7 @@ import { PriceEmbeded } from './embeded/price.embeded';
 
 @Entity('order') //주문
 export class OrderEntity extends BaseEntity {
-  @PrimaryColumn({ type: 'uuid' })
+  @PrimaryColumn()
   @Generated('uuid')
   id: string;
 

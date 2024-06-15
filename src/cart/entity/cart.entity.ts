@@ -8,7 +8,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryColumn,
 } from 'typeorm';
 import { CartProductEntity } from './cart-product.entity';

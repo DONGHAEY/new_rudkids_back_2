@@ -9,9 +9,9 @@ export class GetCartProductDto {
 
 export class CartProductDto {
   id: string;
-  productId: number;
+  productId: string;
   quantity: number;
-  type: string;
+  category: string;
   name: string;
   price: number;
   thumnail: string;

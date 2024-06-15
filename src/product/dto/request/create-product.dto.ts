@@ -14,7 +14,7 @@ export class CreateProductDto {
 
   @IsNotEmpty()
   @IsString()
-  type: string;
+  category: string;
 
   @IsNotEmpty()
   @IsNumber()

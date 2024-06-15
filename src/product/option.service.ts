@@ -17,7 +17,7 @@ export class OptionService {
     private readonly productRepository: Repository<ProductEntity>,
   ) {}
 
-  async createOptionGroup(productId: number, name: string) {
+  async createOptionGroup(productId: string, name: string) {
     const product = await this.productRepository.findOneBy({ id: productId });
     if (!product) throw new NotFoundException('item not found');
     return await this.optionGroupRepo

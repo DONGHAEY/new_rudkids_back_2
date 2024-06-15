@@ -4,17 +4,19 @@ import {
   BaseEntity,
   Column,
   Entity,
+  Generated,
   JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { ProductOptionGroupEntity } from './option-group.entity';
 
 @Entity('product')
 export class ProductEntity extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  @Generated('uuid')
+  id: string;
 
   @ManyToOne(() => SeasonEntity, {
     onDelete: 'CASCADE',
@@ -24,9 +26,9 @@ export class ProductEntity extends BaseEntity {
   season: SeasonEntity | Promise<SeasonEntity>;
 
   @Column({
-    default: 'none',
+    default: '',
   })
-  type: string;
+  category: string;
 
   @Column({
     unique: true,

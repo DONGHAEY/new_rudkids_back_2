@@ -9,5 +9,5 @@ export class SearchRequestDto {
 
   @IsOptional()
   @Expose()
-  type: string;
+  category: string;
 }

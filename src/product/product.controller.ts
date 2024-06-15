@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -63,15 +62,13 @@ export class ProductController {
   @Delete('/:product_id')
   @UseGuards(JwtAuthGuard, AdminCheckGuard)
   @CheckAdmin()
-  async deleteProduct(@Param('product_id', ParseIntPipe) productId: number) {
+  async deleteProduct(@Param('product_id') productId: string) {
     return await this.productService.deleteProduct(productId);
   }
 
-  /*********  */
-
   @Post('/option-group/:product_id')
   createOptinGroup(
-    @Param('product_id', ParseIntPipe) productId: number,
+    @Param('product_id') productId: string,
     @Body() createOptionGroupDto: CreateOptionGroupDto,
   ) {
     return this.optionService.createOptionGroup(

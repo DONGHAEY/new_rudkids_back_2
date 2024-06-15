@@ -2,6 +2,7 @@ import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('season')
 export class SeasonEntity extends BaseEntity {
+  //
   @PrimaryColumn()
   name: string;
 

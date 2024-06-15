@@ -62,7 +62,7 @@ export class CartService {
         cartProductResponseDto.id = cartProduct.id;
         cartProductResponseDto.productId = cartProduct.product.id;
         cartProductResponseDto.name = cartProduct.product.name;
-        cartProductResponseDto.type = cartProduct.product.type;
+        cartProductResponseDto.category = cartProduct.product.category;
         cartProductResponseDto.price = cartProduct.product.price;
         cartProductResponseDto.thumnail = cartProduct.product.thumnail;
         cartProductResponseDto.quantity = cartProduct.quantity;
@@ -85,6 +85,7 @@ export class CartService {
   }
 
   async getCartProductCnt(user: UserEntity) {
+    if (!user) return 0;
     const count = await this.cartProductRepository.countBy({
       cart: {
         user: {

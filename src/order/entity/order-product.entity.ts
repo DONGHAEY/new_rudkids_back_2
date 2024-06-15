@@ -2,18 +2,20 @@ import {
   BaseEntity,
   Column,
   Entity,
+  Generated,
   JoinColumn,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
 } from 'typeorm';
 import { OrderEntity } from './order.entity';
 import { ProductOptionEntity } from './order-product-option.entity';
 
 @Entity('order-product')
 export class OrderProductEntity extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  @Generated('uuid')
+  id: string;
 
   @Column()
   name: string;

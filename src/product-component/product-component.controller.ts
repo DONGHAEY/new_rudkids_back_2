@@ -21,7 +21,7 @@ export class ProductComponentController {
   @Post('/:product_id')
   @CheckAdmin()
   async createProductComponent(
-    @Param('product_id', ParseIntPipe) productId: number,
+    @Param('product_id') productId: string,
     @Body() createProductComponentDto: CreateProductComponentDto,
   ) {
     // product정보가 필요함, 어디 product에 등록할건지는..
@@ -34,7 +34,7 @@ export class ProductComponentController {
   @Delete('/:product_component_id')
   @CheckAdmin()
   async delteProductComponent(
-    @Param('product_component_id', ParseIntPipe) productComponentId: number,
+    @Param('product_component_id') productComponentId: string,
   ) {
     // productComponent id정보가 필요함.
     return await this.productComponentService.delteProductComponent(
