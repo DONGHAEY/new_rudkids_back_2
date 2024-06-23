@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseArrayPipe,
@@ -119,5 +120,11 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   async setFirstInviteFinished(@GetUser() user: UserEntity) {
     return await this.userService.setFirstInviteFinished(user);
+  }
+
+  @Delete()
+  @UseGuards(JwtAuthGuard)
+  async deleteUser(@GetUser() user: UserEntity) {
+    await this.userService.deleteUser(user);
   }
 }

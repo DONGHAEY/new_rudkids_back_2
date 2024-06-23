@@ -199,6 +199,11 @@ export class UserService {
     await user.save();
   }
 
+  async deleteUser(user: UserEntity) {
+    //
+    await user.remove();
+  }
+
   private async getUserRank(user: UserEntity): Promise<number> {
     const rank = await this.userRepository.countBy({
       view: {

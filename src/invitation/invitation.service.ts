@@ -133,4 +133,19 @@ export class InvitationService {
       await manager.save(acceptor);
     });
   }
+
+  async deleteInvitation(inviter: UserEntity, invitationId: string) {
+    return this.dataSoruce.transaction(async (manager) => {
+      const invitation = await manager.findOneBy(InvitationEntity, {
+        id: invitationId,
+        inviter: {
+          id: inviter.id,
+        },
+      });
+      if (!invitation) throw new NotFoundException();
+      await manager.remove(invitation);
+      inviter.invitateCnt--;
+      await inviter.save();
+    });
+  }
 }

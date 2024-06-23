@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { GetUser } from 'src/auth/decorators/getUser.decorator';
 import JwtAuthGuard from 'src/auth/guards/auth.guard';
 import { UserEntity } from 'src/user/entity/user.entity';
@@ -33,5 +40,14 @@ export class InvitationController {
     @GetUser() user: UserEntity,
   ) {
     return await this.invitationService.acceptInvitation(invitationId, user);
+  }
+
+  @Delete('/:invitation_id')
+  @UseGuards(JwtAuthGuard)
+  async deleteInvitation(
+    @Param('invitation_id') invitationId: string,
+    @GetUser() user: UserEntity,
+  ) {
+    return await this.invitationService.deleteInvitation(user, invitationId);
   }
 }
