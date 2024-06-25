@@ -38,7 +38,6 @@ export class UserService {
           totalCnt: 'DESC',
         },
       },
-      take: 8,
     });
     return plainToInstance(SimpleUserDto, rankUserList);
   }

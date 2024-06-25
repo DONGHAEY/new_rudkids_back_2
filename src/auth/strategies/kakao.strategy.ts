@@ -22,7 +22,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
     done: any,
   ): Promise<OauthUserPaylod> {
     const { email, phone_number } = profile._json.kakao_account;
-    console.log(profile._json.kakao_account);
+    // console.log(profile._json.kakao_account);
     return {
       email,
       mobile: phone_number,

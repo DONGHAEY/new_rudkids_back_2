@@ -43,7 +43,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         maxAge: 3600000 * 24 * AuthService.TOKEN_EXPIRE_DAYS,
         // domain: 'rud.kids',
       });
-      console.log('asdf');
       return userInfo;
     }
     throw new UnauthorizedException();

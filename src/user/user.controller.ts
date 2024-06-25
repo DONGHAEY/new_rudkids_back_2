@@ -53,7 +53,6 @@ export class UserController {
     @GetUser() user: UserEntity,
     @Body('instagramId') instagramId: string,
   ) {
-    console.log('user instagramId', instagramId);
     return await this.userService.updateInstagramId(user, instagramId);
   }
 
