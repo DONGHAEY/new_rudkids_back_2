@@ -17,6 +17,9 @@ export class FindInvitationResponseDto extends InvitationEntity {
   invitorId: string | null; //Inviter 식별자
 
   @Expose()
+  description: string;
+
+  @Expose()
   type: string;
 
   @Expose()

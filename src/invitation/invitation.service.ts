@@ -60,8 +60,8 @@ export class InvitationService {
       id: invitationId,
     });
     if (!invitation) return null;
-
     let type = '';
+    let description = 'Invite Only';
     let invitorId = null;
     let friends = [];
     let otherUsers: UserEntity[] = [];
@@ -85,6 +85,7 @@ export class InvitationService {
         },
         take: 최대표시유저 - invitedUsers.length,
       });
+      description = invitation.school.description;
     } else if (invitation.inviter) {
       type = 'friend';
       invitorId = invitation.inviter.id;
@@ -104,6 +105,8 @@ export class InvitationService {
         },
         take: 최대표시유저 - invitedUsers.length,
       });
+    } else {
+      return null;
     }
 
     friends = [...invitedUsers, ...otherUsers];
@@ -111,6 +114,7 @@ export class InvitationService {
       ...invitation,
       type,
       invitorId,
+      description,
       friends: plainToInstance(FriendDto, friends),
     });
   }
