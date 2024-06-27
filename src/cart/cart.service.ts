@@ -45,17 +45,17 @@ export class CartService {
         },
       },
     };
-    //
+
     let userCart = await this.cartRepository.findOne(findOneOption);
     if (!userCart) {
       const newCart = new CartEntity();
       newCart.user = user;
+      newCart.cartProducts = [];
       await newCart.save();
       userCart = await this.cartRepository.findOne(findOneOption);
     }
     const cartResponseDto: GetCartProductDto = new GetCartProductDto();
     cartResponseDto.id = userCart.id;
-    cartResponseDto.shippingPrice = userCart.shippingPrice;
     cartResponseDto.cartProducts = await Promise.all(
       userCart.cartProducts?.map(async (cartProduct) => {
         const cartProductResponseDto = new CartProductDto();
@@ -84,7 +84,7 @@ export class CartService {
     return cartResponseDto;
   }
 
-  async getCartProductCnt(user: UserEntity) {
+  async getUserCartProductCnt(user: UserEntity) {
     if (!user) return 0;
     const count = await this.cartProductRepository.countBy({
       cart: {
@@ -167,7 +167,7 @@ export class CartService {
       const newCartProduct = new CartProductEntity();
       newCartProduct.cart = cart;
       newCartProduct.product = product;
-      newCartProduct.quantity = 1;
+      newCartProduct.quantity = addToCartRequestDto.quantity ?? 1;
       newCartProduct.options = productOptions;
       await newCartProduct.save();
       cart.cartProducts.push(newCartProduct);
@@ -202,18 +202,5 @@ export class CartService {
         id: user.id,
       },
     });
-  }
-
-  async patchShippingPrice(
-    user: UserEntity,
-    shippingPrice: number,
-  ): Promise<void> {
-    const cart = await this.cartRepository.findOneBy({
-      user: {
-        id: user.id,
-      },
-    });
-    cart.shippingPrice = shippingPrice;
-    await cart.save();
   }
 }

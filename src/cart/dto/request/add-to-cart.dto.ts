@@ -1,4 +1,10 @@
-import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class AddToCartDto {
   @IsNotEmpty()
@@ -8,7 +14,7 @@ export class AddToCartDto {
   @IsArray()
   optionIds: string[];
 
-  // @IsNotEmpty()
-  // @IsNumber()
-  // quantity: number;
+  @IsOptional()
+  @IsNumber()
+  quantity: number;
 }

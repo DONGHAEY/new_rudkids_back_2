@@ -45,11 +45,6 @@ export class OrderEntity extends BaseEntity {
   @JoinColumn()
   orderProducts: OrderProductEntity[]; //주문상품정보
 
-  // @Column({
-  //   default: true,
-  // })
-  // needToPay: boolean;
-
   @OneToOne((type) => PaymentEntity, (paymentEntity) => paymentEntity.order, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',

@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -8,16 +9,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { OrderEntity } from './entity/order.entity';
 import { DataSource, LessThan, MoreThan, Repository } from 'typeorm';
-import { CartEntity } from 'src/cart/entity/cart.entity';
-import { CartProductEntity } from 'src/cart/entity/cart-product.entity';
 import { OrderProductEntity } from './entity/order-product.entity';
 import { CreateOrderDto } from './dto/request/create-order.dto';
 import { PatchShippingDto } from './dto/request/patch-shipping.dto';
-import { ProductOptionEntity } from './entity/order-product-option.entity';
+import { ProductOptionEntity as OrderProductOptionEntity } from './entity/order-product-option.entity';
 import { CursorPageRequestDto } from 'src/dto/pagination/page-request.dto';
 import { CursorPageMeta } from 'src/dto/pagination/page-meta.dto';
 import { PageResponseDto } from 'src/dto/pagination/page-response.dto';
 import PayStatusEnum from 'src/payment/enum/pay-status.enum';
+import { ProductEntity } from 'src/product/entity/product.entity';
+import { OrderingProductDto } from './dto/request/ordering-product.dto';
 
 @Injectable()
 export class OrderService {
@@ -47,56 +48,72 @@ export class OrderService {
     createOrderDto: CreateOrderDto,
   ): Promise<OrderEntity> {
     return this.dataSource.transaction(async (manager) => {
-      const cart = await manager.findOne(CartEntity, {
-        where: {
-          id: createOrderDto.cartId,
-        },
-      });
-      if (!cart) throw new NotFoundException('카트를 찾을 수 없습니다.');
-      if (cart.cartProducts.length <= 0) {
-        throw new HttpException('카트가 비었습니다.', HttpStatus.BAD_REQUEST);
-      }
       const newOrder = new OrderEntity();
       newOrder.orderer = user; //주문자
       newOrder.shipping = createOrderDto.shipping; //배송정보
       newOrder.price = {
-        shipping: 0,
+        shipping: 1,
         orderProducts: 0,
       };
-      //배송 가격 관련
-      newOrder.price.shipping = cart.shippingPrice;
       newOrder.orderProducts = [];
+      console.log(createOrderDto.orderingProducts);
       await Promise.all(
-        cart.cartProducts.map(async (cartProduct: CartProductEntity) => {
-          const newOrderProduct = new OrderProductEntity();
-          newOrderProduct.name = cartProduct.product.name;
-          newOrderProduct.price = cartProduct.product.price;
-          newOrderProduct.thumnail = cartProduct.product.thumnail;
-          newOrderProduct.quantity = cartProduct.quantity;
-          newOrderProduct.productId = String(cartProduct.product.id);
-          newOrderProduct.options = await Promise.all(
-            cartProduct.options?.map(async (option) => {
-              const optionEm = new ProductOptionEntity();
-              optionEm.groupName = (await option.optionGroup).name;
-              optionEm.name = option.name;
-              optionEm.price = option.price;
-              newOrderProduct.price += option.price;
-              return await manager.save(optionEm);
-            }),
-          );
-          await manager.save(newOrderProduct);
-          newOrder.orderProducts.push(newOrderProduct);
-          newOrder.price.orderProducts +=
-            newOrderProduct.price * cartProduct.quantity;
-        }),
+        createOrderDto.orderingProducts.map(
+          async (orderingProduct: OrderingProductDto) => {
+            const product = await manager.findOne(ProductEntity, {
+              where: {
+                id: orderingProduct.productId,
+              },
+              relations: {
+                optionGroups: {
+                  options: true,
+                },
+              },
+            });
+            if (!product) throw new NotFoundException();
+            if (
+              product.optionGroups.length !== orderingProduct.optionIds.length
+            ) {
+              throw new ConflictException('옵션개수가 제품의 개수와 맞지 않음');
+            }
+            const newOrderProduct = new OrderProductEntity();
+            newOrderProduct.name = product.name;
+            newOrderProduct.price = product.price;
+            newOrderProduct.thumnail = product.thumnail;
+            newOrderProduct.quantity = orderingProduct.quantity;
+            newOrderProduct.productId = product.id;
+            await Promise.all(
+              product.optionGroups?.map(async (productOptionGroup) => {
+                const findOption = productOptionGroup.options?.find(
+                  (productOption) => {
+                    return orderingProduct.optionIds.find(
+                      (optionId) => productOption.id === optionId,
+                    );
+                  },
+                );
+                if (!findOption) {
+                  throw new NotFoundException('옵션을 찾을 수 없습니다.');
+                }
+                const optionEm = new OrderProductOptionEntity();
+                optionEm.groupName = productOptionGroup.name;
+                optionEm.name = findOption.name;
+                optionEm.price = findOption.price;
+                newOrderProduct.price += findOption.price;
+                return await manager.save(optionEm);
+              }),
+            );
+            await manager.save(newOrderProduct);
+            newOrder.orderProducts.push(newOrderProduct);
+            newOrder.price.orderProducts +=
+              newOrderProduct.price * orderingProduct.quantity;
+          },
+        ),
       );
       newOrder.totalPrice = Object.values(newOrder.price).reduce(
         (a, b) => a + b,
         0,
       );
-      if (newOrder.totalPrice <= 0) {
-        newOrder.totalPrice = 1;
-      }
+      if (newOrder.totalPrice <= 0) newOrder.totalPrice = 1;
       return await manager.save(newOrder);
     });
   }

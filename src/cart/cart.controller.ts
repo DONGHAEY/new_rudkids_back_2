@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -30,7 +29,7 @@ export class CartController {
   @Get('/cart_products_cnt')
   @UseGuards(OptionalJwtAuthGuard)
   async getMyCartProductCnt(@GetUser() user: UserEntity) {
-    return await this.cartService.getCartProductCnt(user);
+    return await this.cartService.getUserCartProductCnt(user);
   }
 
   @Post('cart_product')
@@ -64,14 +63,5 @@ export class CartController {
   @UseGuards(JwtAuthGuard)
   async deleteCart(@GetUser() user: UserEntity) {
     return await this.cartService.deleteCart(user);
-  }
-
-  @Patch('/shipping_price')
-  @UseGuards(JwtAuthGuard)
-  async patchShippingPrice(
-    @GetUser() user: UserEntity,
-    @Body('data', ParseIntPipe) shippingPrice: number,
-  ) {
-    return await this.cartService.patchShippingPrice(user, shippingPrice);
   }
 }

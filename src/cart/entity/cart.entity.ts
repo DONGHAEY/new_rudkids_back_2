@@ -6,7 +6,7 @@ import {
   Entity,
   Generated,
   JoinColumn,
-  ManyToOne,
+  ManyToMany,
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
@@ -18,7 +18,7 @@ export class CartEntity extends BaseEntity {
   @Generated('uuid')
   id: string;
 
-  @ManyToOne((type) => UserEntity, {
+  @ManyToMany((type) => UserEntity, {
     lazy: true,
     nullable: false,
     onDelete: 'CASCADE',
@@ -26,11 +26,6 @@ export class CartEntity extends BaseEntity {
   })
   @JoinColumn()
   user: UserEntity | Promise<UserEntity>;
-
-  @Column({
-    default: 1,
-  })
-  shippingPrice: number; //배송비
 
   @OneToMany(
     (type) => CartProductEntity,
