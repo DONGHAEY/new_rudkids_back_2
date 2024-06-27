@@ -9,8 +9,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import JwtAuthGuard from 'src/auth/guards/auth.guard';
 import { FileService } from './file.service';
-import { Blob } from 'buffer';
-import * as bufferToArrayBuffer from 'buffer-to-arraybuffer';
 
 @Controller('file')
 export class FileController {

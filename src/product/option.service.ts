@@ -54,7 +54,7 @@ export class OptionService {
     const option = await this.optionRepository.findOneBy({
       id: optionId,
     });
-    if (!option) throw new NotFoundException('option is not fount');
+    if (!option) throw new NotFoundException('option is not found');
     await option.remove();
     return;
   }
@@ -63,7 +63,7 @@ export class OptionService {
     const optionGroup = await this.optionGroupRepo.findOneBy({
       id: optionGroupId,
     });
-    if (!optionGroup) throw new NotFoundException('optionGroup not fount');
+    if (!optionGroup) throw new NotFoundException('optionGroup not found');
     optionGroup.name = name;
     await optionGroup.save();
     return await this.optionGroupRepo.findOneBy({ id: optionGroupId });

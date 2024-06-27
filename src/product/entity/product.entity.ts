@@ -64,11 +64,13 @@ export class ProductEntity extends BaseEntity {
   @JoinColumn()
   optionGroups: ProductOptionGroupEntity[];
 
-  //아래의 이름을 model3ds로 변경하면 좋을듯.
   @OneToMany(
     (type) => ProductComponentEntity,
     (productComponentEntity) => productComponentEntity.product,
   )
   @JoinColumn()
   components: ProductComponentEntity[];
+
+  // @Column()
+  // status :
 }

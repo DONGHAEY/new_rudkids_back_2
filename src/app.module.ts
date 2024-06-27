@@ -16,6 +16,7 @@ import { SeasonModule } from './season/season.module';
 import { InvitationModule } from './invitation/invitation.module';
 import { InstagramProfileModule } from './instagram-profile/instagram-profile.module';
 import { CollectionModule } from './collection/collection.module';
+import { QnaModule } from './qna/qna.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { CollectionModule } from './collection/collection.module';
     InvitationModule,
     InstagramProfileModule,
     CollectionModule,
+    QnaModule,
   ],
 })
 export class AppModule {}
