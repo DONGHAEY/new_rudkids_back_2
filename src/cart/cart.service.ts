@@ -32,6 +32,14 @@ export class CartService {
     private dataSource: DataSource,
   ) {}
 
+  private async createCart(user: UserEntity) {
+    const newCart = new CartEntity();
+    newCart.user = user;
+    newCart.cartProducts = [];
+    await newCart.save();
+    return newCart;
+  }
+
   async getCart(user: UserEntity): Promise<GetCartProductDto> {
     const findOneOption: any = {
       where: {
@@ -48,10 +56,7 @@ export class CartService {
 
     let userCart = await this.cartRepository.findOne(findOneOption);
     if (!userCart) {
-      const newCart = new CartEntity();
-      newCart.user = user;
-      newCart.cartProducts = [];
-      await newCart.save();
+      await this.createCart(user);
       userCart = await this.cartRepository.findOne(findOneOption);
     }
     const cartResponseDto: GetCartProductDto = new GetCartProductDto();
@@ -100,25 +105,25 @@ export class CartService {
     user: UserEntity,
     addToCartRequestDto: AddToCartDto,
   ): Promise<void> {
-    const cart = await this.cartRepository.findOneBy({
+    let cart = await this.cartRepository.findOneBy({
       user: {
         id: user.id,
       },
     });
-    if (!cart) throw new NotFoundException();
+    if (!cart) {
+      cart = await this.createCart(user);
+    }
     const product = await this.productRepository.findOne({
       where: { id: addToCartRequestDto.productId },
       relations: {
         optionGroups: true,
       },
     });
-
     if (!product) throw new NotFoundException('유효한 상품을 찾을 수 없습니다');
     let cartProducts = await this.cartProductRepository.findBy({
       cart: { id: cart.id },
       product: { id: product.id },
     });
-
     /***  */
     cartProducts?.map((cartProduct) => {
       let sameOptionCnt = 0;
@@ -131,7 +136,6 @@ export class CartService {
         throw new ConflictException('이미 저장된 아이템');
       }
     });
-
     await this.dataSource.transaction(async (manager) => {
       const productOptions = await manager.findBy(ProductOptionEntity, {
         id: In([...addToCartRequestDto.optionIds]),
@@ -141,7 +145,7 @@ export class CartService {
           },
         },
       });
-      //
+
       const productOptionGroups = product?.optionGroups;
       productOptionGroups?.map((productOptionGroup) => {
         const options = productOptionGroup.options;

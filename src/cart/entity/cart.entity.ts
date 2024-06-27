@@ -6,7 +6,7 @@ import {
   Entity,
   Generated,
   JoinColumn,
-  ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
@@ -18,7 +18,7 @@ export class CartEntity extends BaseEntity {
   @Generated('uuid')
   id: string;
 
-  @ManyToMany((type) => UserEntity, {
+  @ManyToOne((type) => UserEntity, {
     lazy: true,
     nullable: false,
     onDelete: 'CASCADE',
