@@ -29,9 +29,6 @@ export class CartEntity extends BaseEntity {
   @OneToMany(
     (type) => CartProductEntity,
     (cartProductEntity) => cartProductEntity.cart,
-    {
-      eager: true,
-    },
   )
   @JoinColumn()
   cartProducts: CartProductEntity[];

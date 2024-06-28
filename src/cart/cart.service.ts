@@ -41,27 +41,42 @@ export class CartService {
   }
 
   async getCart(user: UserEntity): Promise<GetCartProductDto> {
-    const findOneOption: any = {
-      where: {
-        user: {
-          id: user.id,
-        },
+    let userCart = await this.cartRepository.findOneBy({
+      user: {
+        id: user.id,
       },
-      order: {
-        cartProducts: {
-          createdAt: 'DESC',
-        },
-      },
-    };
-    let userCart = await this.cartRepository.findOne(findOneOption);
+    });
     if (!userCart) {
-      await this.createCart(user);
-      userCart = await this.cartRepository.findOne(findOneOption);
+      userCart = await this.createCart(user);
     }
+
+    const cartProducts = await this.dataSource.transaction(async (manager) => {
+      return await manager.find(CartProductEntity, {
+        where: {
+          cart: {
+            id: userCart.id,
+          },
+        },
+        order: {
+          createdAt: 'DESC',
+          options: {
+            optionGroup: {
+              priority: 'ASC',
+            },
+          },
+        },
+        relations: {
+          options: {
+            optionGroup: true,
+          },
+        },
+      });
+    });
+
     const cartResponseDto: GetCartProductDto = new GetCartProductDto();
     cartResponseDto.id = userCart.id;
     cartResponseDto.cartProducts = await Promise.all(
-      userCart.cartProducts?.map(async (cartProduct) => {
+      cartProducts?.map(async (cartProduct) => {
         const cartProductResponseDto = new CartProductDto();
         cartProductResponseDto.id = cartProduct.id;
         cartProductResponseDto.productId = cartProduct.product.id;
@@ -84,7 +99,6 @@ export class CartService {
         return cartProductResponseDto;
       }),
     );
-
     return cartResponseDto;
   }
 
@@ -104,14 +118,17 @@ export class CartService {
     user: UserEntity,
     addToCartRequestDto: AddToCartDto,
   ): Promise<void> {
-    let cart = await this.cartRepository.findOneBy({
-      user: {
-        id: user.id,
+    let cart = await this.cartRepository.findOne({
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
+      relations: {
+        cartProducts: true,
       },
     });
-    if (!cart) {
-      cart = await this.createCart(user);
-    }
+    if (!cart) cart = await this.createCart(user);
     const product = await this.productRepository.findOne({
       where: { id: addToCartRequestDto.productId },
       relations: {
