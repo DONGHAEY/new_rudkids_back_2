@@ -50,9 +50,6 @@ export class CartService {
       order: {
         cartProducts: {
           createdAt: 'DESC',
-          options: {
-            optionGroup: 'ASC',
-          },
         },
       },
     };
