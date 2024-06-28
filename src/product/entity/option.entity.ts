@@ -32,4 +32,7 @@ export class ProductOptionEntity extends BaseEntity {
 
   @Column()
   price: number;
+
+  @Column()
+  priority: number;
 }

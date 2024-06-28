@@ -50,10 +50,12 @@ export class CartService {
       order: {
         cartProducts: {
           createdAt: 'DESC',
+          options: {
+            optionGroup: 'ASC',
+          },
         },
       },
     };
-
     let userCart = await this.cartRepository.findOne(findOneOption);
     if (!userCart) {
       await this.createCart(user);

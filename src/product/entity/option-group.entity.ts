@@ -41,4 +41,7 @@ export class ProductOptionGroupEntity extends BaseEntity {
   )
   @JoinColumn()
   options: ProductOptionEntity[];
+
+  @Column()
+  priority: number;
 }

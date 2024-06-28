@@ -1,13 +1,12 @@
 import { UserEntity } from 'src/user/entity/user.entity';
 import {
   BaseEntity,
-  Column,
   CreateDateColumn,
   Entity,
   Generated,
   JoinColumn,
-  ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryColumn,
 } from 'typeorm';
 import { CartProductEntity } from './cart-product.entity';
@@ -18,7 +17,7 @@ export class CartEntity extends BaseEntity {
   @Generated('uuid')
   id: string;
 
-  @ManyToOne((type) => UserEntity, {
+  @OneToOne((type) => UserEntity, {
     lazy: true,
     nullable: false,
     onDelete: 'CASCADE',

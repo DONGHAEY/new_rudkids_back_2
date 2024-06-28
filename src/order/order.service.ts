@@ -69,6 +69,14 @@ export class OrderService {
                   options: true,
                 },
               },
+              order: {
+                optionGroups: {
+                  priority: 'DESC',
+                  options: {
+                    priority: 'DESC',
+                  },
+                },
+              },
             });
             if (!product) throw new NotFoundException();
             if (

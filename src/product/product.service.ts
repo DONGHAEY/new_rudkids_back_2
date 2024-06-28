@@ -60,6 +60,12 @@ export class ProductService {
         components: {
           priority: 'ASC',
         },
+        optionGroups: {
+          priority: 'ASC',
+          options: {
+            priority: 'ASC',
+          },
+        },
       },
     });
     if (!product) {
