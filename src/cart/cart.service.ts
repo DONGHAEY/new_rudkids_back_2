@@ -141,7 +141,7 @@ export class CartService {
       product: { id: product.id },
     });
     /***  */
-    cartProducts?.map((cartProduct) => {
+    cartProducts?.forEach(async (cartProduct) => {
       let sameOptionCnt = 0;
       cartProduct.options?.map((option) => {
         if (addToCartRequestDto.optionIds?.includes(option.id)) {
@@ -149,7 +149,7 @@ export class CartService {
         }
       });
       if (sameOptionCnt === cartProduct.options.length) {
-        throw new ConflictException('이미 저장된 아이템');
+        await cartProduct.remove();
       }
     });
     await this.dataSource.transaction(async (manager) => {
