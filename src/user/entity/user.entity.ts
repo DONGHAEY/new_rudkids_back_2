@@ -5,7 +5,6 @@ import {
   Entity,
   Generated,
   JoinColumn,
-  ManyToMany,
   ManyToOne,
   PrimaryColumn,
 } from 'typeorm';
