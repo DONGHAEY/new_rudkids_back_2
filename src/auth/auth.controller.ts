@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { NaverAuthGuard } from './guards/naver-auth.guard';
 import { GetUser } from './decorators/getUser.decorator';
@@ -11,8 +11,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('toss_tester')
-  async tossTesterLogin(@Req() req: Request) {
-    return await this.authService.tossTesterLogin(req.res);
+  async tossTesterLogin(@Req() req: Request, @Body('uuid') uuid: string) {
+    return await this.authService.tossTesterLogin(uuid, req.res);
   }
 
   @Get('/naver')

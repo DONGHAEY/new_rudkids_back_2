@@ -52,10 +52,10 @@ export class AuthService {
       .send();
   }
 
-  async tossTesterLogin(res: Response) {
-    console.log('-');
+  async tossTesterLogin(uuid: string, res: Response) {
     const testerUser = await this.userRepository.findOneBy({
       nickname: 'tosspayments',
+      id: uuid,
     });
     if (!testerUser) return;
     const accessToken = this.generateAccessToken(testerUser);
