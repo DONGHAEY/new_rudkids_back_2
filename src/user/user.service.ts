@@ -195,6 +195,7 @@ export class UserService {
 
   async setFirstInviteFinished(user: UserEntity): Promise<void> {
     user.isFirstInviteFinished = true;
+    user.invitateCnt = 0;
     await user.save();
   }
 
