@@ -30,7 +30,7 @@ export class InstagramProfileService {
       const imageFileResponse = await axios.get(instagramImgUrl, {
         responseType: 'arraybuffer',
       });
-      const fileName = `${instagramId}-instagram.png`;
+      const fileName = `${instagramId}-${new Date().toISOString()}instagram.png`;
       const contentType =
         imageFileResponse?.headers?.['Content-Type']?.toString() ?? 'image/png';
       const savedInstagramImageUrl = await this.fileService.saveFileToSupabase(
