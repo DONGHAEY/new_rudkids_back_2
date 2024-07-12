@@ -7,7 +7,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import JwtAuthGuard from 'src/auth/guards/auth.guard';
+import JwtAuthGuard from 'src/auth/guard/auth.guard';
 import { FileService } from './file.service';
 
 @Controller('file')

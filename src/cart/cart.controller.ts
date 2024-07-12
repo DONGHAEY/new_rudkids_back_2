@@ -8,13 +8,13 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { GetUser } from 'src/auth/decorators/getUser.decorator';
-import JwtAuthGuard from 'src/auth/guards/auth.guard';
+import { GetUser } from 'src/auth/decorator/getUser.decorator';
+import JwtAuthGuard from 'src/auth/guard/auth.guard';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { CartService } from './cart.service';
 import { PutCartprodQuantityDto } from './dto/request/put-cartprod-amount.dto';
 import { AddToCartDto } from './dto/request/add-to-cart.dto';
-import { OptionalJwtAuthGuard } from 'src/auth/guards/optional-auth.guard';
+import { OptionalJwtAuthGuard } from 'src/auth/guard/optional-auth.guard';
 
 @Controller('cart')
 export class CartController {

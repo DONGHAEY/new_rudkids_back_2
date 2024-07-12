@@ -11,6 +11,7 @@ export class InstagramProfileService {
     InstagramProfileService.apifyClient = new ApifyClient({
       token: process.env.APIFY_KEY,
     });
+    console.log('adsdf');
   }
 
   async getProfileImgUrl(instagramId: string) {
@@ -29,7 +30,7 @@ export class InstagramProfileService {
       const imageFileResponse = await axios.get(instagramImgUrl, {
         responseType: 'arraybuffer',
       });
-      const fileName = `${instagramId}-${new Date().toLocaleTimeString()}-instagram.png`;
+      const fileName = `${instagramId}-instagram.png`;
       const contentType =
         imageFileResponse?.headers?.['Content-Type']?.toString() ?? 'image/png';
       const savedInstagramImageUrl = await this.fileService.saveFileToSupabase(
@@ -37,6 +38,7 @@ export class InstagramProfileService {
         Buffer.from(imageFileResponse.data).buffer,
         contentType,
       );
+      console.log('ds');
       return savedInstagramImageUrl;
     }
     throw new NotFoundException();

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Strategy } from 'passport-kakao';
 import { PassportStrategy } from '@nestjs/passport';
 import { OauthUserPaylod } from '../payload/oauth-user.payload';
+import { PlatformEnum } from '../enum/platform.enum';
 
 @Injectable()
 export class KakaoStrategy extends PassportStrategy(Strategy) {
@@ -23,11 +24,11 @@ export class KakaoStrategy extends PassportStrategy(Strategy) {
   ): Promise<OauthUserPaylod> {
     const { email, phone_number } = profile._json.kakao_account;
     // console.log(profile._json.kakao_account);
+
     return {
       email,
-      mobile: phone_number,
-      // name,
-      // birth: '',
+      mobile: String(phone_number).replaceAll('+82 10', '010'),
+      platform: PlatformEnum.KAKAO,
     };
   }
 }

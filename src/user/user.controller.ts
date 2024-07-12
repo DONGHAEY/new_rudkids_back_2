@@ -11,14 +11,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { GetUser } from 'src/auth/decorators/getUser.decorator';
+import { GetUser } from 'src/auth/decorator/getUser.decorator';
 import { UserEntity } from './entity/user.entity';
-import JwtAuthGuard from 'src/auth/guards/auth.guard';
+import JwtAuthGuard from 'src/auth/guard/auth.guard';
 import { UserService } from './user.service';
-import { EditNicknameDto } from './dto/editNickname.dto';
+import { EditNicknameDto } from './dto/request/edit-nickname.dto';
 import { FileService } from 'src/file/file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { OptionalJwtAuthGuard } from 'src/auth/guards/optional-auth.guard';
+import { OptionalJwtAuthGuard } from 'src/auth/guard/optional-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -33,9 +33,9 @@ export class UserController {
     return await this.userService.getMe(user);
   }
 
-  @Get('/rank')
-  async getRankUserList() {
-    return await this.userService.getRankUserList();
+  @Get('/ranks-of-view')
+  async getRankOfViewUsers() {
+    return await this.userService.getViewRankUsers();
   }
 
   @UseGuards(OptionalJwtAuthGuard)
@@ -47,27 +47,23 @@ export class UserController {
     return await this.userService.getOtherUser(user, userId);
   }
 
-  @Patch('instagramId')
+  @Patch('instagram')
   @UseGuards(JwtAuthGuard)
   async updateInstagramId(
     @GetUser() user: UserEntity,
-    @Body('instagramId') instagramId: string,
+    @Body() setInstagramDto: any,
   ) {
-    return await this.userService.updateInstagramId(user, instagramId);
-  }
-
-  @Patch('imageUrl')
-  @UseGuards(JwtAuthGuard)
-  async updateImageUrl(
-    @GetUser() user: UserEntity,
-    @Body('imageUrl') imageUrl: string,
-  ) {
-    return await this.userService.updateImageUrl(user, imageUrl);
+    await this.userService.setInstgram(user, setInstagramDto);
+    return await this.userService.requestFinishOnboarding(user);
   }
 
   @Post(':user_id/today_view_up')
-  async updateTodayView(@Param('user_id') userId: string) {
-    return await this.userService.updateTodayView(userId);
+  @UseGuards(OptionalJwtAuthGuard)
+  async updateTodayView(
+    @GetUser() me: UserEntity,
+    @Param('user_id') userId: string,
+  ) {
+    return await this.userService.updateTodayView(me, userId);
   }
 
   @Patch('nickname')
@@ -113,12 +109,6 @@ export class UserController {
     @Body('links', ParseArrayPipe) links: string[],
   ) {
     return await this.userService.updateLinks(user, links);
-  }
-
-  @Patch('set-firstInviteFinished')
-  @UseGuards(JwtAuthGuard)
-  async setFirstInviteFinished(@GetUser() user: UserEntity) {
-    return await this.userService.setFirstInviteFinished(user);
   }
 
   @Delete()

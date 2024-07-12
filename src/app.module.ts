@@ -7,7 +7,6 @@ import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 import { ProductModule } from './product/product.module';
 import { ProductComponentModule } from './product-component/product-component.module';
-import { SchoolModule } from './school/school.module';
 import { FileModule } from './file/file.module';
 import { SmsModule } from './sms/sms.module';
 import { ShippingModule } from './shipping/shipping.module';
@@ -17,6 +16,7 @@ import { InvitationModule } from './invitation/invitation.module';
 import { InstagramProfileModule } from './instagram-profile/instagram-profile.module';
 import { CollectionModule } from './collection/collection.module';
 import { QnaModule } from './qna/qna.module';
+import { CommunityModule } from './community/community.module';
 
 @Module({
   imports: [
@@ -40,7 +40,6 @@ import { QnaModule } from './qna/qna.module';
     OrderModule,
     ProductModule,
     ProductComponentModule,
-    SchoolModule,
     FileModule,
     SmsModule,
     ShippingModule,
@@ -50,6 +49,7 @@ import { QnaModule } from './qna/qna.module';
     InstagramProfileModule,
     CollectionModule,
     QnaModule,
+    CommunityModule,
   ],
 })
 export class AppModule {}

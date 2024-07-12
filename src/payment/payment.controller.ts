@@ -1,7 +1,7 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { CreatePaymentRequestDto } from './dto/create-payment-request.dto';
-import { GetUser } from 'src/auth/decorators/getUser.decorator';
+import { GetUser } from 'src/auth/decorator/getUser.decorator';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { CancelPaymentRequestDto } from './dto/cancel-payment-request.dto';
 

@@ -8,9 +8,9 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { CheckAdmin } from 'src/auth/decorators/checkAdmin.decorator';
-import AdminCheckGuard from 'src/auth/guards/admin-check.guard';
-import JwtAuthGuard from 'src/auth/guards/auth.guard';
+import { CheckAdmin } from 'src/auth/decorator/checkAdmin.decorator';
+import AdminCheckGuard from 'src/auth/guard/admin-check.guard';
+import JwtAuthGuard from 'src/auth/guard/auth.guard';
 import { SeasonService } from './season.service';
 import { CreateEditSeasonRequestDto } from './dto/create-edit-season-request.dto';
 

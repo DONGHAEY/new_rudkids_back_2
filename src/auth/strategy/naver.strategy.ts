@@ -3,6 +3,8 @@ import { Strategy } from 'passport-naver-v2';
 import { PassportStrategy } from '@nestjs/passport';
 import { OauthUserPaylod } from '../payload/oauth-user.payload';
 import { plainToClass } from 'class-transformer';
+import { platform } from 'os';
+import { PlatformEnum } from '../enum/platform.enum';
 
 @Injectable()
 export class NaverStrategy extends PassportStrategy(Strategy) {
@@ -24,6 +26,7 @@ export class NaverStrategy extends PassportStrategy(Strategy) {
     return plainToClass(OauthUserPaylod, {
       email,
       mobile,
+      platform: PlatformEnum.NAVER,
     });
   }
 }

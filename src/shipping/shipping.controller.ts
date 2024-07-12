@@ -9,9 +9,9 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import JwtAuthGuard from 'src/auth/guards/auth.guard';
+import JwtAuthGuard from 'src/auth/guard/auth.guard';
 import { ShippingService } from './shipping.service';
-import { GetUser } from 'src/auth/decorators/getUser.decorator';
+import { GetUser } from 'src/auth/decorator/getUser.decorator';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { AddEditShippingRequestDto } from './dto/addEdit-shipping-request.dto';
 import axios from 'axios';

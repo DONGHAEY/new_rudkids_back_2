@@ -8,10 +8,10 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CheckAdmin } from 'src/auth/decorators/checkAdmin.decorator';
-import { GetUser } from 'src/auth/decorators/getUser.decorator';
-import AdminCheckGuard from 'src/auth/guards/admin-check.guard';
-import JwtAuthGuard from 'src/auth/guards/auth.guard';
+import { CheckAdmin } from 'src/auth/decorator/checkAdmin.decorator';
+import { GetUser } from 'src/auth/decorator/getUser.decorator';
+import AdminCheckGuard from 'src/auth/guard/admin-check.guard';
+import JwtAuthGuard from 'src/auth/guard/auth.guard';
 import { UserEntity } from 'src/user/entity/user.entity';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/request/create-order.dto';

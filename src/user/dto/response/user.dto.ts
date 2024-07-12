@@ -1,13 +1,12 @@
 import { Exclude, Expose, Type } from 'class-transformer';
-import { ViewEmbeded } from '../entity/embeded/view.embeded';
+import { ViewEmbeded } from '../../entity/embeded/view.embeded';
+import { InstagramEmbeded } from 'src/user/entity/embeded/instagram.embeded';
+import { OnboardingStepEnum } from 'src/user/entity/enum/onboarding-step.enum';
 
 @Exclude()
 export class UserResponseDto {
   @Expose()
   id: string;
-
-  @Expose()
-  instagramId: string;
 
   @Expose()
   nickname: string;
@@ -16,36 +15,29 @@ export class UserResponseDto {
   cardImgUrl: string;
 
   @Expose()
-  imageUrl: string;
-
-  @Expose()
-  invitateCnt: number;
+  @Type(() => InstagramEmbeded)
+  instagram: InstagramEmbeded;
 
   @Expose()
   @Type(() => ViewEmbeded)
   view: ViewEmbeded;
 
   @Expose()
+  @Type(() => String)
   links: string[];
+
+  @Expose()
+  onboardingStep: OnboardingStepEnum;
 
   @Expose()
   introduce: string;
 
   @Expose()
-  isInvited: boolean;
-
-  @Expose()
   isFollower: boolean;
-
-  @Expose()
-  rank: number;
-
-  @Expose()
-  isFirstInviteFinished: boolean;
 
   @Expose()
   followerCnt: number;
 
   @Expose()
-  firstPaidNum: number;
+  rankOfView: number;
 }

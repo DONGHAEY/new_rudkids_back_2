@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
@@ -19,19 +19,29 @@ export class AuthService {
   static TOKEN_EXPIRE_DAYS = 3;
   static REFRESH_TOKEN_EXPIRE_DAYS = 60;
 
-  async oauthLogin({ email, mobile }: OauthUserPaylod, res: Response) {
-    //
+  async oauthLogin(
+    { email, mobile, platform }: OauthUserPaylod,
+    res: Response,
+  ) {
+    let loginType = '';
+    res.clearCookie('access_token').clearCookie('refresh_token');
     let user: UserEntity = await this.userRepository.findOneBy({
-      privacy: { email },
+      privacy: {
+        mobile,
+      },
+      platform,
     });
-
     if (!user) {
-      user = await this.userService.registerUser({
+      user = await this.userService.signUp({
         privacy: {
           email,
           mobile,
         },
+        platform,
       });
+      loginType = 'sign_up';
+    } else {
+      loginType = 'sign_in';
     }
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
@@ -49,7 +59,9 @@ export class AuthService {
         maxAge: 3600000 * 24 * AuthService.REFRESH_TOKEN_EXPIRE_DAYS,
         // domain: 'rud.kids',
       })
-      .send();
+      .send({
+        type: loginType,
+      });
   }
 
   async tossTesterLogin(uuid: string, res: Response) {

@@ -1,12 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvitationEntity } from './entity/invitation.entity';
-import { DataSource, EntityManager, Not, Repository } from 'typeorm';
+import { DataSource, In, Not, Repository } from 'typeorm';
 import { UserEntity } from 'src/user/entity/user.entity';
-import { FindInvitationResponseDto } from './dto/find-invitation-response.dto';
-import { plainToClass, plainToInstance } from 'class-transformer';
-import { FriendDto } from './dto/friend.dto';
-import { SchoolEntity } from 'src/school/entity/school.entity';
+import { InvitationDto } from './dto/response/invitation.dto';
+import { InvitationTypeEnum } from './entity/enum/invitation-type.enum';
+import { CommunityEntity } from 'src/community/entity/community.entity';
+import { plainToInstance } from 'class-transformer';
+import { InvitedUserDto } from './dto/response/invited-user.dto';
+import { CreateCommunityInvitationDto } from './dto/request/create-community-invitation.dto';
+import { OnboardingStepEnum } from 'src/user/entity/enum/onboarding-step.enum';
 
 @Injectable()
 export class InvitationService {
@@ -14,142 +23,160 @@ export class InvitationService {
   constructor(
     @InjectRepository(InvitationEntity)
     private invitationRepository: Repository<InvitationEntity>,
-    @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
-    @InjectRepository(SchoolEntity)
-    private schoolRepository: Repository<SchoolEntity>,
-    //
+    @InjectRepository(CommunityEntity)
+    private communityRepository: Repository<CommunityEntity>,
     private dataSoruce: DataSource,
   ) {}
 
-  async createFriendInvitation(user: UserEntity): Promise<string> {
-    return this.dataSoruce.manager.transaction(async (manager) => {
-      const newInvitation = new InvitationEntity();
-      user.invitateCnt++;
-      user = await manager.save(user);
-      newInvitation.inviter = user;
-      newInvitation.fromName = user.instagramId;
-      newInvitation.fromImageUrl = user.imageUrl;
-      const { id: invitationId } = await manager.save(newInvitation);
-      return invitationId;
-    });
-  }
+  private static minMarkUserAmount = 15;
 
-  async createSchoolInvitation(schoolNm: string): Promise<string> {
-    const school = await this.schoolRepository.findOneBy({
-      name: schoolNm,
-    });
-    if (!school) {
-      throw new NotFoundException('등록 안된 학교입니다.');
+  async createFriendInvitation(user: UserEntity): Promise<string> {
+    if (user.onboardingStep < OnboardingStepEnum.COMPLETE_SET_INSTAGRAM) {
+      throw new ConflictException(
+        '인스타그램 등록 완료 사용자들이 이용할 수 있습니다.',
+      );
     }
     const newInvitation = new InvitationEntity();
-    newInvitation.fromName = school.name;
-    newInvitation.fromImageUrl = school.imageUrl;
-    newInvitation.school = school;
+    newInvitation.invitor = user;
+    newInvitation.type = InvitationTypeEnum.FRIEND;
+    newInvitation.description = `Invite Only From @${user.instagram.instagramId}`;
+    newInvitation.acceptCnt = 0;
+    newInvitation.maxAcceptCnt = 1;
     await newInvitation.save();
-
     return newInvitation.id;
   }
 
-  async findInvitation(
-    invitationId: string,
-  ): Promise<FindInvitationResponseDto> {
-    const 최대표시유저 = 15;
+  async createCommunityInvitation(
+    communityName: string,
+    createCommunityInvitationDto: CreateCommunityInvitationDto,
+  ): Promise<string> {
+    const community = await this.communityRepository.findOneBy({
+      name: communityName,
+    });
+    if (!community) {
+      throw new NotFoundException('해당 커뮤니티는 존재하지 않네요..');
+    }
+    const newInvitation = new InvitationEntity();
+    newInvitation.community = community;
+    newInvitation.type = InvitationTypeEnum.COMMUNITY;
+    newInvitation.description = createCommunityInvitationDto.description;
+    newInvitation.acceptCnt = 0;
+    newInvitation.maxAcceptCnt = createCommunityInvitationDto.maxAcceptCnt ?? 1;
+    await newInvitation.save();
+    return newInvitation.id;
+  }
 
+  async getInvitation(invitationId: string): Promise<InvitationDto> {
     const invitation = await this.invitationRepository.findOneBy({
       id: invitationId,
     });
     if (!invitation) return null;
-    let type = '';
-    let description = 'Invite Only';
-    let invitorId = null;
-    let friends = [];
-    let otherUsers: UserEntity[] = [];
-    let invitedUsers: UserEntity[] = [];
-    if (invitation.school) {
-      type = 'school';
-      invitorId = invitation.school.name;
-      invitedUsers = await this.userRepository.find({
-        where: {
-          school: {
-            name: invitation.school.name,
-          },
-        },
-        take: 최대표시유저,
-      });
-      otherUsers = await this.userRepository.find({
-        where: {
-          school: {
-            name: Not(invitation?.school?.name),
-          },
-        },
-        take: 최대표시유저 - invitedUsers.length,
-      });
-      description = invitation.school.description;
-    } else if (invitation.inviter) {
-      type = 'friend';
-      invitorId = invitation.inviter.id;
-      invitedUsers = await this.userRepository.find({
-        where: {
-          inviter: {
-            id: invitation.inviter.id,
-          },
-        },
-        take: 3,
-      });
-      otherUsers = await this.userRepository.find({
-        where: {
-          inviter: {
-            id: Not(invitation?.inviter?.id),
-          },
-        },
-        take: 최대표시유저 - invitedUsers.length,
-      });
-    } else {
-      return null;
+    const findInvitationDto = new InvitationDto();
+    findInvitationDto.type = invitation.type;
+    findInvitationDto.description = invitation.description;
+    findInvitationDto.acceptCnt = invitation.acceptCnt;
+    findInvitationDto.maxAcceptCnt = invitation.maxAcceptCnt;
+    switch (invitation.type) {
+      case InvitationTypeEnum.COMMUNITY: {
+        findInvitationDto.fromImageUrl = invitation.community.imageUrl;
+        findInvitationDto.fromName = invitation.community.name;
+        break;
+      }
+      case InvitationTypeEnum.FRIEND: {
+        findInvitationDto.fromImageUrl = invitation.invitor.instagram.imageUrl;
+        findInvitationDto.fromName = invitation.invitor.instagram.instagramId;
+        break;
+      }
     }
-
-    friends = [...invitedUsers, ...otherUsers];
-    return plainToClass(FindInvitationResponseDto, {
-      ...invitation,
-      type,
-      invitorId,
-      description,
-      friends: plainToInstance(FriendDto, friends),
-    });
+    return findInvitationDto;
   }
 
   async acceptInvitation(invitationId: string, acceptor: UserEntity) {
-    return this.dataSoruce.transaction(async (manager) => {
+    if (acceptor.onboardingStep !== OnboardingStepEnum.COMPLETE_SIGNUP) {
+      throw new HttpException('초대를 이미 수락했습니다', HttpStatus.ACCEPTED);
+    }
+    await this.dataSoruce.transaction(async (manager) => {
       const invitation = await manager.findOneBy(InvitationEntity, {
         id: invitationId,
       });
-      if (!invitation) {
-        throw new NotFoundException('존재하지 않는 초대권입니다.');
-      }
-      if (invitation.school) {
-        acceptor.school = invitation.school;
-      } else if (invitation.inviter) {
-        acceptor.inviter = invitation.inviter;
+      if (!invitation) throw new NotFoundException();
+      invitation.acceptCnt++;
+      if (invitation.acceptCnt >= invitation.maxAcceptCnt) {
         await manager.remove(invitation);
+      } else {
+        await manager.save(invitation);
       }
-      acceptor.isInvited = true;
+      switch (invitation.type) {
+        case InvitationTypeEnum.COMMUNITY: {
+          acceptor.community = invitation.community;
+          break;
+        }
+        case InvitationTypeEnum.FRIEND: {
+          acceptor.invitor = invitation.invitor;
+          break;
+        }
+      }
+      acceptor.onboardingStep = OnboardingStepEnum.COMPLETE_ACCEPT_INVITATION;
       await manager.save(acceptor);
     });
   }
 
-  async deleteInvitation(inviter: UserEntity, invitationId: string) {
+  async deleteInvitation(invitor: UserEntity, invitationId: string) {
+    const invitation = await this.invitationRepository.findOneBy({
+      id: invitationId,
+      invitor: {
+        id: invitor.id,
+      },
+    });
+    if (!invitation) throw new NotFoundException();
+    await invitation.remove();
+  }
+
+  async getMarkUsers(invitationId: string) {
     return this.dataSoruce.transaction(async (manager) => {
       const invitation = await manager.findOneBy(InvitationEntity, {
         id: invitationId,
-        inviter: {
-          id: inviter.id,
-        },
       });
       if (!invitation) throw new NotFoundException();
-      await manager.remove(invitation);
-      inviter.invitateCnt--;
-      await inviter.save();
+      let invitedUsers = [];
+
+      const defaultWhere = { onboardingStep: OnboardingStepEnum.FINISHED };
+
+      switch (invitation.type) {
+        case InvitationTypeEnum.COMMUNITY: {
+          invitedUsers = await manager.findBy(UserEntity, {
+            ...defaultWhere,
+            community: {
+              id: invitation.community.id,
+            },
+          });
+          break;
+        }
+        case InvitationTypeEnum.FRIEND: {
+          invitedUsers = await manager.findBy(UserEntity, {
+            ...defaultWhere,
+            invitor: {
+              id: invitation.invitor.id,
+            },
+          });
+          break;
+        }
+      }
+
+      if (invitedUsers.length < InvitationService.minMarkUserAmount) {
+        const moreRequireUserTake =
+          InvitationService.minMarkUserAmount - invitedUsers.length;
+        const otherUsers = await manager.find(UserEntity, {
+          where: {
+            ...defaultWhere,
+            id: Not(In(invitedUsers.map((invitedUser) => invitedUser.id))),
+          },
+          take: moreRequireUserTake,
+        });
+        invitedUsers = [...invitedUsers, ...otherUsers];
+      }
+
+      return plainToInstance(InvitedUserDto, invitedUsers);
     });
   }
 }

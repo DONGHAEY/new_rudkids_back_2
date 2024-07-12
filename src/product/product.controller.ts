@@ -9,11 +9,11 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CheckAdmin } from 'src/auth/decorators/checkAdmin.decorator';
-import JwtAuthGuard from 'src/auth/guards/auth.guard';
+import { CheckAdmin } from 'src/auth/decorator/checkAdmin.decorator';
+import JwtAuthGuard from 'src/auth/guard/auth.guard';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
-import AdminCheckGuard from 'src/auth/guards/admin-check.guard';
+import AdminCheckGuard from 'src/auth/guard/admin-check.guard';
 import { SearchRequestDto } from './dto/request/search-request.dto';
 import { OptionService } from './option.service';
 import { CreateOptionDto } from './dto/request/create-option.dto';

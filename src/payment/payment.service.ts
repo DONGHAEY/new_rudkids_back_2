@@ -77,17 +77,7 @@ export class PaymentService implements OnModuleInit {
         order,
       })
       .save();
-    //
-    if (!order.orderer.firstPaidNum) {
-      const lastPaidUser = await this.userRepository.findOne({
-        where: {},
-        order: {
-          firstPaidNum: 'DESC',
-        },
-      });
-      order.orderer.firstPaidNum = (lastPaidUser?.firstPaidNum || 0) + 1;
-      await order.orderer.save();
-    }
+
     order.payment = payment;
     await order.save();
     return payment;

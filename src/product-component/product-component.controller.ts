@@ -7,11 +7,11 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { CheckAdmin } from 'src/auth/decorators/checkAdmin.decorator';
-import JwtAuthGuard from 'src/auth/guards/auth.guard';
+import { CheckAdmin } from 'src/auth/decorator/checkAdmin.decorator';
+import JwtAuthGuard from 'src/auth/guard/auth.guard';
 import { ProductComponentService } from './product-component.service';
 import { CreateProductComponentDto } from './dto/create-product-component.dto';
-import AdminCheckGuard from 'src/auth/guards/admin-check.guard';
+import AdminCheckGuard from 'src/auth/guard/admin-check.guard';
 
 @Controller('product-component')
 @UseGuards(JwtAuthGuard, AdminCheckGuard)

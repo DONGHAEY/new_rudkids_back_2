@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { NaverAuthGuard } from './guards/naver-auth.guard';
-import { GetUser } from './decorators/getUser.decorator';
+import { NaverAuthGuard } from './guard/naver-auth.guard';
+import { GetUser } from './decorator/getUser.decorator';
 import { OauthUserPaylod } from './payload/oauth-user.payload';
 import { Request } from 'express';
-import { KakaoAuthGuard } from './guards/kakao-auth.guard';
+import { KakaoAuthGuard } from './guard/kakao-auth.guard';
 
 @Controller('auth')
 export class AuthController {

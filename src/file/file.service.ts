@@ -1,15 +1,11 @@
-import { SupabaseClient, createClient } from '@supabase/supabase-js';
-import {
-  ConflictException,
-  Injectable,
-  OnApplicationBootstrap,
-} from '@nestjs/common';
+import { createClient } from '@supabase/supabase-js';
+import { ConflictException, Injectable, OnModuleInit } from '@nestjs/common';
 
 @Injectable()
-export class FileService implements OnApplicationBootstrap {
+export class FileService implements OnModuleInit {
   private static supabaseStorage: any;
 
-  async onApplicationBootstrap() {
+  async onModuleInit() {
     const supabaseUrl = process.env.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_KEY;
     FileService.supabaseStorage = createClient(
@@ -23,7 +19,6 @@ export class FileService implements OnApplicationBootstrap {
     file: any,
     contentType: string = '',
   ): Promise<string> {
-    const tas: SupabaseClient = null;
     try {
       const { error, data } = await FileService.supabaseStorage
         .from('rudkids')

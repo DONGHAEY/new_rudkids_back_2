@@ -7,8 +7,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserFollowService } from './user-follow.service';
-import JwtAuthGuard from 'src/auth/guards/auth.guard';
-import { GetUser } from 'src/auth/decorators/getUser.decorator';
+import JwtAuthGuard from 'src/auth/guard/auth.guard';
+import { GetUser } from 'src/auth/decorator/getUser.decorator';
 import { UserEntity } from 'src/user/entity/user.entity';
 
 @Controller('/user/:target_user_id/follow')

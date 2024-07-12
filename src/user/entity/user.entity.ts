@@ -9,8 +9,11 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { PrivacyEmbeded } from './embeded/privacy.embeded';
-import { SchoolEntity } from 'src/school/entity/school.entity';
 import { ViewEmbeded } from './embeded/view.embeded';
+import { CommunityEntity } from 'src/community/entity/community.entity';
+import { PlatformEnum } from 'src/auth/enum/platform.enum';
+import { InstagramEmbeded } from './embeded/instagram.embeded';
+import { OnboardingStepEnum } from './enum/onboarding-step.enum';
 
 @Entity('user')
 export class UserEntity extends BaseEntity {
@@ -18,22 +21,26 @@ export class UserEntity extends BaseEntity {
   @Generated('uuid')
   id: string;
 
-  @Column((type) => PrivacyEmbeded)
-  privacy: PrivacyEmbeded; //개인정보
+  @Column({
+    type: 'enum',
+    enum: OnboardingStepEnum,
+    default: OnboardingStepEnum.COMPLETE_SIGNUP,
+  })
+  onboardingStep: OnboardingStepEnum;
 
   @Column({
     unique: true,
   })
-  nickname: string; //프로필네임(닉네임)
+  nickname: string;
 
-  /** Profile INFO */
-  @Column()
-  instagramId: string; //인스타그램 아이디
+  @Column((type) => PrivacyEmbeded)
+  privacy: PrivacyEmbeded; //개인정보
 
-  @Column({
-    default: '/Image/rudkidsLogo.png',
-  })
-  imageUrl: string; //사진url
+  @Column((type) => InstagramEmbeded)
+  instagram: InstagramEmbeded; //인스타그램
+
+  @Column((type) => ViewEmbeded)
+  view: ViewEmbeded; //조회수
 
   @Column({
     default: null,
@@ -42,12 +49,9 @@ export class UserEntity extends BaseEntity {
   })
   cardImgUrl: string;
 
-  @Column((type) => ViewEmbeded)
-  view: ViewEmbeded;
-
   @Column({
     type: 'longtext',
-    default: '',
+    default: '[]',
   })
   links: string; //소셜링크들
 
@@ -58,22 +62,21 @@ export class UserEntity extends BaseEntity {
   introduce: string; //소개글
 
   @Column({
-    default: 0,
-  })
-  invitateCnt: number; //초대한 횟수
-  /** Profile INFO */
-
-  @ManyToOne(() => SchoolEntity, {
-    onDelete: 'SET NULL',
-    onUpdate: 'CASCADE',
-    lazy: true,
-  })
-  school: SchoolEntity;
-
-  @Column({
     default: false,
   })
   isAdmin: boolean; //어드민여부
+
+  @Column({
+    nullable: true,
+    default: null,
+  })
+  waitingOrder: number; //대기순번
+
+  @Column({
+    enum: PlatformEnum,
+    type: 'enum',
+  })
+  platform: PlatformEnum;
 
   @ManyToOne(() => UserEntity, {
     onDelete: 'SET NULL',
@@ -81,28 +84,15 @@ export class UserEntity extends BaseEntity {
     lazy: true,
   })
   @JoinColumn()
-  inviter: UserEntity | Promise<UserEntity>; //초대자
+  invitor: UserEntity | Promise<UserEntity>; //초대자
 
-  // @ManyToMany((type) => ProductEntity, {
-  //   lazy: true,
-  // })
-  // @JoinColumn()
-  // collectedProducts: ProductEntity[] | Promise<ProductEntity[]>;
-
-  @Column({
-    default: false,
+  @ManyToOne(() => CommunityEntity, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+    lazy: true,
   })
-  isInvited: boolean;
-
-  @Column({
-    default: null,
-  })
-  firstPaidNum: number;
-
-  @Column({
-    default: false,
-  })
-  isFirstInviteFinished: boolean;
+  @JoinColumn()
+  community: CommunityEntity | Promise<CommunityEntity>;
 
   @CreateDateColumn()
   createdAt: Date; //가입일

@@ -7,9 +7,11 @@ import {
   Generated,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryColumn,
 } from 'typeorm';
-import { SchoolEntity } from 'src/school/entity/school.entity';
+import { InvitationTypeEnum } from './enum/invitation-type.enum';
+import { CommunityEntity } from 'src/community/entity/community.entity';
 
 @Entity('invitation')
 export class InvitationEntity extends BaseEntity {
@@ -18,12 +20,23 @@ export class InvitationEntity extends BaseEntity {
   id: string;
 
   @Column({
-    nullable: false,
+    type: 'enum',
+    enum: InvitationTypeEnum,
   })
-  fromName: string;
+  type: InvitationTypeEnum;
 
-  @Column({ nullable: false })
-  fromImageUrl: string;
+  @Column()
+  description: string;
+
+  @Column({
+    default: 0,
+  })
+  acceptCnt: number;
+
+  @Column({
+    default: 1,
+  })
+  maxAcceptCnt: number;
 
   @ManyToOne((type) => UserEntity, {
     onDelete: 'CASCADE',
@@ -31,14 +44,15 @@ export class InvitationEntity extends BaseEntity {
     eager: true,
   })
   @JoinColumn()
-  inviter: UserEntity;
+  invitor: UserEntity;
 
-  @ManyToOne((type) => SchoolEntity, {
+  @OneToOne((type) => CommunityEntity, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
     eager: true,
   })
-  school: SchoolEntity;
+  @JoinColumn()
+  community: CommunityEntity;
 
   @CreateDateColumn()
   createdAt: Date;
